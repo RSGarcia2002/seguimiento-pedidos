@@ -11,8 +11,10 @@
 9. [x] Preparar plantilla GitHub Actions y README de instalación y uso de IA.
 10. [x] Publicar repositorio público.
 11. [ ] Activar y comprobar GitHub Actions (requiere permiso workflow).
-12. [ ] Configurar Atlas y publicar en Render gratuito.
-13. [ ] Verificar aplicación pública, actualizar enlaces y preparar texto de entrega.
+12. [x] Configurar Atlas, crear índice único, conservar pedidos y verificar escritura real.
+13. [x] Crear servicio Render gratuito con conexión configurada como secreto.
+14. [ ] Verificar conectividad Render a Atlas y finalizar el despliegue.
+15. [ ] Verificar aplicación pública, actualizar enlaces y preparar texto de entrega.
 
 Evidencia local: 24 verificaciones backend (incluido el contenedor de pruebas),
 1 prueba del marco Angular y 1 flujo E2E de producción aprobados.

@@ -40,3 +40,11 @@ GitHub creó el repositorio público pero rechazó el primer push porque la cred
 OAuth no tiene permiso workflow. Se conservó la configuración como plantilla
 `docs/ci/verificacion-github.yml`, sin activar automatizaciones, y se volvió a enviar
 el código. Las pruebas se ejecutaron localmente; no se declara CI aprobada.
+
+## Conexión a Atlas
+Se configuró la URI únicamente en archivos locales ignorados por Git y con permisos 600.
+Se verificaron conexión, colección e índice único; se conservaron los cuatro pedidos
+locales en Atlas sin sobrescribir registros existentes. Una creación de 250 unidades
+por HTTP se confirmó directamente en Atlas con paquetes 100/100/50; se eliminó únicamente
+ese registro temporal de verificación. La aplicación local ya apunta a Atlas.
+Se creó el servicio gratuito Render autorizado; su conexión pública se verificará por separado.

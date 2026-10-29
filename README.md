@@ -2,7 +2,7 @@
 
 Aplicación web para registrar pedidos, dividirlos en paquetes de hasta 100 unidades y dar seguimiento a su producción. Desarrollada con **Angular, Node.js, Express, MongoDB y TypeScript**, utilizando **SDD con apoyo de Codex**.
 
-**Estado:** funcional y verificada localmente. Publicación en Render pendiente de configurar MongoDB Atlas. Repositorio público: [RSGarcia2002/seguimiento-pedidos](https://github.com/RSGarcia2002/seguimiento-pedidos).
+**Estado:** funcional y verificada localmente con MongoDB Atlas. El servicio gratuito en Render está creado; la publicación sigue pendiente de verificar la conectividad desde Render a Atlas. Repositorio público: [RSGarcia2002/seguimiento-pedidos](https://github.com/RSGarcia2002/seguimiento-pedidos).
 
 ## Funcionalidades
 
@@ -44,6 +44,7 @@ docker run -d --name seguimiento-pedidos-mongo \
 En ejecuciones posteriores, si el contenedor ya existe: `docker start seguimiento-pedidos-mongo`.
 La URI de ejemplo es `mongodb://127.0.0.1:27019/seguimiento_pedidos`.
 Para usar otra base, cambia `MONGODB_URI` en `apps/api/.env`.
+La instalación del autor ya utiliza Atlas mediante un archivo ignorado por Git; la URI de ejemplo continúa apuntando a Docker para que el proyecto sea reproducible sin compartir credenciales.
 
 ```sh
 npm run dev
@@ -163,7 +164,7 @@ Esta es una aplicación de demostración para evaluación técnica, con datos de
 
 Para mantener acotado el tamaño del documento, cada pedido admite hasta 100 000 unidades (1000 paquetes). Número: máximo 50 caracteres; cliente: 120; motivo: 300. El listado se pagina a 12 pedidos por defecto.
 
-**Pendiente de entrega:** conectar Atlas, verificar la URL pública y añadirla a este README. La CI no está activada: la credencial de publicación carece del permiso `workflow`; la plantilla queda incluida para habilitarla.
+**Pendiente de entrega:** completar y verificar el despliegue en Render y añadir la URL pública validada a este README. La CI no está activada: la credencial de publicación carece del permiso `workflow`; la plantilla queda incluida para habilitarla.
 
 ## Convenciones
 
