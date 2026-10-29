@@ -1,0 +1,63 @@
+<!-- Los avisos anuncian el resultado de las acciones sin depender únicamente del color. -->
+@if (aviso()) { <div class="aviso-exito" role="status"><span>{{ aviso() }}</span><button type="button" class="boton-texto" (click)="aviso.set('')" aria-label="Cerrar aviso">×</button></div> }
+@if (error()) { <div class="aviso-error" role="alert"><span>{{ error() }}</span><button type="button" class="boton-texto" (click)="actualizar()">Reintentar</button></div> }
+
+@if (!idDetalle()) {
+  <section aria-labelledby="titulo-panel">
+    <div class="cabecera-pagina"><div><p class="antetitulo">CONTROL DE PRODUCCIÓN</p><h1 id="titulo-panel">Tus pedidos, en movimiento<span>.</span></h1><p class="descripcion">Una vista clara de cada pedido, desde la primera unidad hasta la última.</p></div><button class="boton primario" (click)="abrirFormulario(formularioPedido)"><span aria-hidden="true">＋</span> Nuevo pedido</button></div>
+    <!-- Los indicadores son globales; los filtros afectan únicamente al listado. -->
+    <div class="indicadores" aria-label="Resumen global de producción">
+      <article><span>Pedidos registrados</span><strong>{{ listado()?.resumen?.pedidos ?? '—' }}</strong><small>Todos los pedidos</small></article>
+      <article><span>En curso</span><strong>{{ listado()?.resumen?.enCurso ?? '—' }}</strong><small>Producción y revisión</small></article>
+      <article><span>Completados</span><strong>{{ listado()?.resumen?.completados ?? '—' }}</strong><small>Todos sus paquetes listos</small></article>
+      <article class="indicador-acento"><span>Unidades listas</span><strong>{{ listado()?.resumen?.unidadesListas ?? '—' }}</strong><small>de {{ listado()?.resumen?.unidades ?? '—' }} unidades registradas</small></article>
+    </div>
+    <div class="barra-listado"><div class="pestanas" aria-label="Filtrar pedidos por estado">
+      @for (filtro of [{valor: 'todos', texto: 'Todos'}, {valor: 'pendiente', texto: 'Pendientes'}, {valor: 'en_curso', texto: 'En curso'}, {valor: 'completado', texto: 'Completados'}]; track filtro.valor) { <button type="button" [class.activa]="filtroEstado() === filtro.valor" [attr.aria-pressed]="filtroEstado() === filtro.valor" (click)="filtrar(filtro.valor)">{{ filtro.texto }}</button> }
+    </div><button type="button" class="boton secundario compacto" [disabled]="cargando() || !listado()?.pedidos?.length" (click)="exportarCsv()">Exportar página CSV</button></div>
+    <form class="buscador" (ngSubmit)="buscar()"><label for="busqueda">Buscar pedido</label><div><input id="busqueda" name="busqueda" [(ngModel)]="busqueda" maxlength="80" placeholder="Número de pedido o nombre del cliente"><button type="submit" class="boton secundario" [disabled]="cargando()">Buscar</button><button type="button" class="boton-icono" (click)="actualizar()" [disabled]="cargando()" aria-label="Actualizar pedidos">↻</button></div></form>
+    @if (cargando()) { <div class="estado-vacio" role="status">Cargando pedidos…</div> }
+    @else if (listado()?.pedidos?.length) {
+      <div class="tabla-contenedor"><table><caption class="solo-lectores">Listado de pedidos con progreso calculado por unidades listas</caption><thead><tr><th scope="col">Pedido / Cliente</th><th scope="col">Unidades</th><th scope="col">Paquetes por estado</th><th scope="col">Avance</th><th scope="col">Estado</th><th scope="col"><span class="solo-lectores">Acciones</span></th></tr></thead><tbody>
+      @for (pedido of listado()!.pedidos; track pedido.id) { <tr><td><a class="numero-pedido" [routerLink]="['/pedidos', pedido.id]">{{ pedido.numero }}</a><span class="cliente">{{ pedido.cliente }}</span><small>{{ pedido.fechaCreacion | date:'dd/MM/yyyy' }}</small></td><td><strong>{{ pedido.cantidad | number }}</strong><small>{{ pedido.totalPaquetes }} {{ pedido.totalPaquetes === 1 ? 'paquete' : 'paquetes' }}</small></td><td><div class="conteos">@for (estado of estados; track estado) { <span [class]="'conteo ' + estado" [attr.title]="etiquetas[estado]">{{ pedido.conteos[estado] }} <span>{{ etiquetas[estado] }}</span></span> }</div></td><td class="columna-avance"><div class="texto-avance"><strong>{{ pedido.avance }} %</strong><small>{{ pedido.unidadesListas }}/{{ pedido.cantidad }} uds.</small></div><progress max="100" [value]="pedido.avance" [attr.aria-label]="'Avance del pedido ' + pedido.numero">{{ pedido.avance }} %</progress></td><td><span [class]="'insignia ' + pedido.estado">{{ etiquetas[pedido.estado] }}</span></td><td><a class="enlace-detalle" [routerLink]="['/pedidos', pedido.id]" [attr.aria-label]="'Ver pedido ' + pedido.numero">Ver pedido <span aria-hidden="true">↗</span></a></td></tr> }
+      </tbody></table></div>
+      <div class="paginacion"><span>{{ listado()!.total }} pedido(s) · Página {{ pagina }} de {{ listado()!.totalPaginas }}</span><div><button type="button" class="boton secundario compacto" [disabled]="pagina <= 1" (click)="cambiarPagina(pagina - 1)">Anterior</button><button type="button" class="boton secundario compacto" [disabled]="pagina >= listado()!.totalPaginas" (click)="cambiarPagina(pagina + 1)">Siguiente</button></div></div>
+    } @else if (listado() && !error()) {
+      <div class="estado-vacio"><span class="simbolo-vacio" aria-hidden="true">▣</span><h2>{{ busqueda || filtroEstado() !== 'todos' ? 'No encontramos pedidos con esos filtros.' : 'Tu próximo pedido comienza aquí.' }}</h2><p>{{ busqueda || filtroEstado() !== 'todos' ? 'Prueba con otro número, cliente o estado.' : 'Registra un pedido y dividiremos sus unidades en paquetes de hasta 100.' }}</p><button class="boton primario" (click)="abrirFormulario(formularioPedido)">Crear un pedido</button></div>
+    }
+    <p class="nota">El avance se calcula por unidades listas. Los paquetes en producción o revisión todavía no suman al porcentaje.</p>
+  </section>
+} @else {
+  <a routerLink="/" class="enlace-volver">← Volver a pedidos</a>
+  @if (cargandoDetalle()) { <div class="estado-vacio" role="status">Cargando detalle del pedido…</div> }
+  @else if (pedido(); as detalle) {
+    <section aria-labelledby="titulo-detalle"><div class="cabecera-pagina"><div><p class="antetitulo">DETALLE DEL PEDIDO</p><h1 id="titulo-detalle">{{ detalle.numero }}<span>.</span></h1><p class="descripcion">{{ detalle.cliente }} · Creado el {{ detalle.fechaCreacion | date:'dd/MM/yyyy, HH:mm' }}</p></div><button type="button" class="boton secundario" [disabled]="!!paqueteOcupado()" (click)="cargarDetalle()">↻ Actualizar</button></div>
+    <div class="resumen-detalle"><div><span>Unidades</span><strong>{{ detalle.cantidad | number }}</strong></div><div><span>Paquetes</span><strong>{{ detalle.totalPaquetes }}</strong></div><div class="avance-detalle"><span>Avance por unidades listas</span><strong>{{ detalle.avance }} % <small>{{ detalle.unidadesListas }} de {{ detalle.cantidad }} unidades</small></strong><progress max="100" [value]="detalle.avance" aria-label="Avance del pedido">{{ detalle.avance }} %</progress></div></div>
+    <div class="cabecera-paquetes"><div><h2>Seguimiento por paquete</h2><p>Avanza en orden. Si un paquete no supera la revisión, devuélvelo a producción.</p></div><label>Mostrar<select [ngModel]="filtroPaquetes()" (ngModelChange)="filtroPaquetes.set($event)"><option value="todos">Todos ({{ detalle.totalPaquetes }})</option>@for (estado of estados; track estado) { <option [value]="estado">{{ etiquetas[estado] }} ({{ detalle.conteos[estado] }})</option> }</select></label></div>
+    <div class="paquetes">@for (paquete of paquetesVisibles(); track paquete.id) {
+      <article class="tarjeta-paquete"><div class="titulo-paquete"><span>PAQUETE {{ paquete.numero.toString().padStart(2, '0') }}</span><span [class]="'insignia ' + paquete.estado">{{ etiquetas[paquete.estado] }}</span></div><h3>{{ paquete.unidades }} <span>unidades</span></h3>
+      <ol class="pasos" [attr.aria-label]="'Estado actual: ' + etiquetas[paquete.estado]">@for (estado of estados; track estado; let indice = $index) { <li [class.actual]="paquete.estado === estado" [class.superado]="estados.indexOf(paquete.estado) > indice" [attr.aria-current]="paquete.estado === estado ? 'step' : null"><span class="punto-paso" aria-hidden="true"></span><span>{{ etiquetas[estado] }}</span></li> }</ol>
+      <div class="acciones-paquete">@if (paquete.estado !== 'listo') { <button type="button" class="boton primario compacto" [disabled]="!!paqueteOcupado()" (click)="cambiarEstado(paquete, 'avanzar')">{{ paqueteOcupado() === paquete.id ? 'Guardando…' : textoAvance(paquete) }}</button> } @else { <span class="texto-completado">✓ Paquete completado</span> } @if (paquete.estado === 'revision') { <button type="button" class="boton rechazo compacto" [disabled]="!!paqueteOcupado()" (click)="abrirRechazo(paquete)">Rechazar</button> }</div>
+      <details class="historial"><summary>Historial de cambios ({{ paquete.historial.length }})</summary>@if (!paquete.historial.length) { <p>Sin cambios. El paquete se creó como Pendiente.</p> } @else { <ol>@for (evento of paquete.historial.slice().reverse(); track $index) { <li><strong>{{ etiquetas[evento.origen] }} → {{ etiquetas[evento.destino] }}</strong><time>{{ evento.fecha | date:'dd/MM/yyyy, HH:mm:ss' }}</time>@if (evento.motivo) { <p>{{ evento.motivo }}</p> }</li> }</ol> }</details>
+      </article>
+    } @empty { <p class="estado-vacio">No hay paquetes en este estado.</p> }</div>
+    </section>
+  }
+}
+
+<!-- El diálogo nativo gestiona foco, Escape y bloqueo del fondo de forma accesible. -->
+<dialog #dialogoPedido aria-labelledby="titulo-nuevo" (cancel)="guardando() && $event.preventDefault()">
+  <form #formularioPedido="ngForm" (ngSubmit)="guardarPedido(formularioPedido)">
+    <div class="cabecera-dialogo"><div><p class="antetitulo">NUEVO REGISTRO</p><h2 id="titulo-nuevo">Crear pedido</h2></div><button type="button" class="boton-icono" [disabled]="guardando()" (click)="cerrarFormulario()" aria-label="Cerrar formulario">×</button></div>
+    <p class="descripcion-dialogo">Indica los datos del pedido. Los paquetes se generan automáticamente.</p>
+    @if (errorFormulario()) { <p class="aviso-error" role="alert">{{ errorFormulario() }}</p> }
+    <label for="numero">Número de pedido <span aria-hidden="true">*</span></label><input id="numero" name="numero" [(ngModel)]="nuevoPedido.numero" required maxlength="50" placeholder="Ej. PED-001" autocomplete="off" [disabled]="guardando()">
+    <label for="cliente">Cliente <span aria-hidden="true">*</span></label><input id="cliente" name="cliente" [(ngModel)]="nuevoPedido.cliente" required maxlength="120" placeholder="Nombre del cliente" [disabled]="guardando()">
+    <label for="cantidad">Cantidad de unidades <span aria-hidden="true">*</span></label><input id="cantidad" name="cantidad" type="number" [(ngModel)]="nuevoPedido.cantidad" required min="1" max="100000" step="1" placeholder="Ej. 250" aria-describedby="ayuda-cantidad" [disabled]="guardando()"><small id="ayuda-cantidad">Un número entero entre 1 y 100 000.</small>
+    <div class="vista-previa" aria-live="polite"><strong>Distribución de paquetes</strong><p>{{ vistaPrevia || 'Ingresa la cantidad para ver cómo se dividirá el pedido.' }}</p></div>
+    <div class="acciones-dialogo"><button type="button" class="boton secundario" [disabled]="guardando()" (click)="cerrarFormulario()">Cancelar</button><button type="submit" class="boton primario" [disabled]="guardando()">{{ guardando() ? 'Creando…' : 'Crear pedido' }}</button></div>
+  </form>
+</dialog>
+<dialog #dialogoRechazo aria-labelledby="titulo-rechazo" (cancel)="paqueteOcupado() && $event.preventDefault()">
+  <form (ngSubmit)="confirmarRechazo()"><div class="cabecera-dialogo"><h2 id="titulo-rechazo">Rechazar paquete {{ paqueteRechazado?.numero }}</h2><button type="button" class="boton-icono" [disabled]="!!paqueteOcupado()" (click)="cerrarRechazo()" aria-label="Cerrar rechazo">×</button></div><p class="descripcion-dialogo">El paquete volverá a En proceso. El cambio quedará registrado en su historial.</p>@if (errorRechazo()) { <p class="aviso-error" role="alert">{{ errorRechazo() }}</p> }<label for="motivo">Motivo de rechazo <small>(opcional)</small></label><textarea id="motivo" name="motivo" [(ngModel)]="motivoRechazo" maxlength="300" rows="3" placeholder="Ej. Corregir acabado antes de una nueva revisión" [disabled]="!!paqueteOcupado()"></textarea><small>{{ motivoRechazo.length }}/300 caracteres</small><div class="acciones-dialogo"><button type="button" class="boton secundario" [disabled]="!!paqueteOcupado()" (click)="cerrarRechazo()">Cancelar</button><button type="submit" class="boton primario" [disabled]="!!paqueteOcupado()">{{ paqueteOcupado() ? 'Guardando…' : 'Confirmar rechazo' }}</button></div></form>
+</dialog>

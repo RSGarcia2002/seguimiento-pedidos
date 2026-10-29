@@ -1,0 +1,24 @@
+{
+  "name": "seguimiento-pedidos",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": "^24.15.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"npm run dev -w @pedidos/api\" \"npm start -w @pedidos/web\"",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "typecheck": "npm run typecheck -w @pedidos/api",
+    "start": "npm start -w @pedidos/api",
+    "test:e2e": "playwright test",
+    "datos:ejemplo": "node scripts/cargar-ejemplos.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "concurrently": "^9.2.1"
+  }
+}
