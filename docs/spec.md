@@ -72,3 +72,23 @@ La política de seguridad de Express no permite scripts ni manejadores JavaScrip
 El build de Angular debe cargar CSS con enlaces ordinarios, sin activación mediante scripts inline.
 Se desactiva únicamente la extracción de CSS crítico (inlineCritical), manteniendo minificación.
 El flujo E2E debe comprobar que el botón primario conserva fondo vino y espaciado de diseño.
+
+## Ampliación: operación sintética y estadísticas
+- Añadir 96 pedidos sintéticos, 8 clientes ficticios y 90 días de actividad, conservando
+  los pedidos existentes. Lote versionado e idempotente, sin cambios al repetirlo.
+- Identificar origenDatos=sintetico y loteDatos; pedidos manuales conservan su origen.
+  La interfaz identifica el entorno como demostración para no atribuir operaciones reales.
+- Cronología: creación <= eventos <= instante de generación; estados y versiones derivan
+  del historial válido, incluidos rechazos solamente desde revisión.
+- GET /api/estadisticas?dias=7|30|90 (30 por defecto). Días calendario de Guatemala (UTC-6),
+  hasta el instante de consulta; se excluyen eventos futuros.
+- Resumen de cartera: pedidos recibidos en el período y su estado actual, unidades listas
+  y avance ponderado. Distribución por unidades y paquetes; clientes por volumen recibido.
+- Actividad: serie diaria de pedidos/unidades recibidos y unidades terminadas según el
+  evento destino=listo, incluyendo pedidos creados antes del período.
+- Calidad: revisiones resueltas (revision->listo o revision->en_proceso), rechazos y
+  porcentaje de rechazo; no confundir eventos de rechazo con número de pedidos.
+- Tiempo medio: horas transcurridas entre primer inicio y terminación de paquetes
+  terminados durante el período, incluyendo los ciclos de rechazo; null si no hay muestra.
+- Vista /estadisticas con selector de período, gráficos SVG accesibles, leyendas,
+  tabla de datos y mensajes de carga/error. Estadísticas derivadas de MongoDB.

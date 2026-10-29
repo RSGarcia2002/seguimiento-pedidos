@@ -382,6 +382,50 @@
           }
         }
       }
+    },
+    "/api/estadisticas": {
+      "get": {
+        "operationId": "consultarEstadisticas",
+        "summary": "Consultar cartera y actividad por período en Guatemala",
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "enum": [
+                7,
+                30,
+                90
+              ],
+              "default": 30
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cartera recibida en el período, movimientos por fecha y calidad de revisiones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Estadisticas"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Período inválido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -621,6 +665,14 @@
               "en_curso",
               "completado"
             ]
+          },
+          "origenDatos": {
+            "type": "string",
+            "enum": [
+              "manual",
+              "sintetico"
+            ],
+            "description": "Procedencia del pedido; los datos generados son ficticios."
           }
         }
       },
@@ -699,6 +751,172 @@
           },
           "resumen": {
             "$ref": "#/components/schemas/ResumenGlobal"
+          }
+        }
+      },
+      "Estadisticas": {
+        "type": "object",
+        "required": [
+          "periodo",
+          "cartera",
+          "actividad",
+          "distribucion",
+          "clientes",
+          "serieDiaria"
+        ],
+        "properties": {
+          "periodo": {
+            "type": "object",
+            "required": [
+              "dias",
+              "desde",
+              "hasta",
+              "zonaHoraria"
+            ],
+            "properties": {
+              "dias": {
+                "type": "integer"
+              },
+              "desde": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "hasta": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "zonaHoraria": {
+                "type": "string"
+              }
+            }
+          },
+          "cartera": {
+            "type": "object",
+            "required": [
+              "pedidos",
+              "unidades",
+              "unidadesListas",
+              "avance",
+              "completados",
+              "enCurso",
+              "pendientes"
+            ],
+            "properties": {
+              "pedidos": {
+                "type": "number"
+              },
+              "unidades": {
+                "type": "number"
+              },
+              "unidadesListas": {
+                "type": "number"
+              },
+              "avance": {
+                "type": "number"
+              },
+              "completados": {
+                "type": "number"
+              },
+              "enCurso": {
+                "type": "number"
+              },
+              "pendientes": {
+                "type": "number"
+              }
+            }
+          },
+          "actividad": {
+            "type": "object",
+            "required": [
+              "unidadesTerminadas",
+              "paquetesTerminados",
+              "revisiones",
+              "rechazos",
+              "tasaRechazo",
+              "tiempoMedioHoras"
+            ],
+            "properties": {
+              "unidadesTerminadas": {
+                "type": "number"
+              },
+              "paquetesTerminados": {
+                "type": "number"
+              },
+              "revisiones": {
+                "type": "number"
+              },
+              "rechazos": {
+                "type": "number"
+              },
+              "tasaRechazo": {
+                "type": "number"
+              },
+              "tiempoMedioHoras": {
+                "type": "number",
+                "nullable": true
+              }
+            }
+          },
+          "distribucion": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "estado": {
+                  "type": "string"
+                },
+                "paquetes": {
+                  "type": "integer"
+                },
+                "unidades": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "clientes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "cliente": {
+                  "type": "string"
+                },
+                "pedidos": {
+                  "type": "integer"
+                },
+                "unidades": {
+                  "type": "integer"
+                },
+                "unidadesListas": {
+                  "type": "integer"
+                },
+                "avance": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "serieDiaria": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fecha": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "pedidos": {
+                  "type": "integer"
+                },
+                "unidadesRecibidas": {
+                  "type": "integer"
+                },
+                "unidadesTerminadas": {
+                  "type": "integer"
+                }
+              }
+            }
           }
         }
       }
