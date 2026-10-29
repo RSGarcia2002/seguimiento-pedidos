@@ -13,5 +13,11 @@ export const rutas: Routes = [
     loadComponent: () => import('./pedidos/panel-pedidos').then((modulo) => modulo.PanelPedidos),
     title: 'Detalle del pedido | TATA',
   },
+  {
+    path: 'estadisticas',
+    loadComponent: () =>
+      import('./estadisticas/panel-estadisticas').then((modulo) => modulo.PanelEstadisticas),
+    title: 'Estadísticas | TATA',
+  },
   { path: '**', redirectTo: '' },
 ];

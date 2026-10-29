@@ -18,8 +18,11 @@ prueba(
       pagina.getByRole('heading', { name: 'Tus pedidos, en movimiento.' }),
     ).toBeVisible();
     // El CSS de producción debe cargar sin scripts inline bloqueados por la CSP.
-  await esperar(pagina.getByRole('button', { name: 'Nuevo pedido' })).toHaveCSS('background-color', 'rgb(158, 37, 45)');
-  await pagina.getByRole('button', { name: 'Nuevo pedido' }).click();
+    await esperar(pagina.getByRole('button', { name: 'Nuevo pedido' })).toHaveCSS(
+      'background-color',
+      'rgb(158, 37, 45)',
+    );
+    await pagina.getByRole('button', { name: 'Nuevo pedido' }).click();
     await pagina.getByLabel('Número de pedido').fill(numeroPrueba);
     await pagina.getByLabel('Cliente', { exact: false }).fill('Cliente de prueba de interfaz');
     await pagina.getByLabel('Cantidad de unidades').fill('250');
@@ -68,5 +71,23 @@ prueba(
     await pagina.getByLabel('Cantidad de unidades').fill('1');
     await pagina.getByRole('button', { name: 'Crear pedido', exact: true }).click();
     await esperar(pagina.getByRole('alert')).toContainText('Ya existe un pedido con ese número.');
+    await pagina.getByRole('button', { name: 'Cerrar formulario' }).click();
+    await pagina.getByRole('link', { name: 'Estadísticas', exact: true }).click();
+    await esperar(
+      pagina.getByRole('heading', { name: 'La operación, en perspectiva.' }),
+    ).toBeVisible();
+    await esperar(
+      pagina.getByRole('img', { name: 'Unidades recibidas y terminadas por día' }),
+    ).toBeVisible();
+    await pagina.getByRole('button', { name: 'Últimos 7 días', exact: true }).click();
+    await esperar(pagina.locator('.cargando')).toHaveCount(0);
+    await pagina.getByText('Consultar datos diarios del gráfico').click();
+    await esperar(pagina.locator('tbody tr')).toHaveCount(7);
+    for (const ancho of [1440, 390, 320]) {
+      await pagina.setViewportSize({ width: ancho, height: 900 });
+      esperar(
+        await pagina.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      ).toBeTruthy();
+    }
   },
 );

@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { rutasPedidos } from './pedidos/rutas.js';
+import { rutasEstadisticas } from './estadisticas/rutas.js';
 import { ErrorNegocio } from './dominio/pedidos.js';
 
 /**
@@ -29,6 +30,7 @@ export function crearAplicacion(estaBaseDatosDisponible: () => boolean) {
 
   // Las rutas de negocio comparten origen con Angular, evitando configurar CORS permisivo.
   aplicacion.use('/api/pedidos', rutasPedidos);
+  aplicacion.use('/api/estadisticas', rutasEstadisticas);
 
   // En producción se entrega el Angular compilado desde este mismo servidor.
   const directorioWeb = fileURLToPath(new URL('../../web/dist/frontend/browser/', import.meta.url));
@@ -64,11 +66,9 @@ export function crearAplicacion(estaBaseDatosDisponible: () => boolean) {
       }
       // El índice único es quien resuelve carreras entre dos creaciones simultáneas.
       if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
-        respuesta
-          .status(409)
-          .json({
-            error: { codigo: 'NUMERO_DUPLICADO', mensaje: 'Ya existe un pedido con ese número.' },
-          });
+        respuesta.status(409).json({
+          error: { codigo: 'NUMERO_DUPLICADO', mensaje: 'Ya existe un pedido con ese número.' },
+        });
         return;
       }
       if (
@@ -77,11 +77,9 @@ export function crearAplicacion(estaBaseDatosDisponible: () => boolean) {
         'type' in error &&
         error.type === 'entity.too.large'
       ) {
-        respuesta
-          .status(413)
-          .json({
-            error: { codigo: 'DATOS_EXCESIVOS', mensaje: 'La solicitud es demasiado grande.' },
-          });
+        respuesta.status(413).json({
+          error: { codigo: 'DATOS_EXCESIVOS', mensaje: 'La solicitud es demasiado grande.' },
+        });
         return;
       }
       if (error instanceof SyntaxError && 'body' in error) {

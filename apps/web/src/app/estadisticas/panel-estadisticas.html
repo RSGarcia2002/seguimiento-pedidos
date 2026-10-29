@@ -1,0 +1,238 @@
+<section aria-labelledby="titulo-estadisticas" [attr.aria-busy]="cargando()">
+  <div class="cabecera">
+    <div>
+      <p class="antetitulo">INTELIGENCIA OPERATIVA</p>
+      <h1 id="titulo-estadisticas">La operación, en perspectiva<span>.</span></h1>
+      <p class="descripcion">Entradas, producción y calidad en una sola lectura.</p>
+    </div>
+    <button class="boton secundario" (click)="cargar()" [disabled]="cargando()">
+      ↻ Actualizar
+    </button>
+  </div>
+  <div class="barra-periodo">
+    <div class="selector-periodo" aria-label="Seleccionar período">
+      @for (periodo of [7, 30, 90]; track periodo) {
+        <button
+          type="button"
+          [class.activo]="dias() === periodo"
+          [attr.aria-pressed]="dias() === periodo"
+          (click)="seleccionarPeriodo(periodo)"
+        >
+          Últimos {{ periodo }} días
+        </button>
+      }
+    </div>
+    <span>Calendario de Guatemala · UTC−6</span>
+  </div>
+  @if (error()) {
+    <div class="error" role="alert">
+      {{ error() }} <button class="boton-texto" (click)="cargar()">Reintentar</button>
+    </div>
+  }
+  @if (cargando()) {
+    <div class="cargando" role="status">Calculando estadísticas del período…</div>
+  } @else if (datos(); as estadisticas) {
+    <div class="indicadores">
+      <article>
+        <span>Pedidos recibidos</span><strong>{{ estadisticas.cartera.pedidos | number }}</strong
+        ><small>{{ estadisticas.cartera.unidades | number }} unidades solicitadas</small>
+      </article>
+      <article class="acento">
+        <span>Unidades terminadas</span
+        ><strong>{{ estadisticas.actividad.unidadesTerminadas | number }}</strong
+        ><small
+          >{{ estadisticas.actividad.paquetesTerminados | number }} paquetes completados en el
+          período</small
+        >
+      </article>
+      <article>
+        <span>Avance de la cartera</span
+        ><strong>{{ estadisticas.cartera.avance }}<em> %</em></strong
+        ><small>Estado actual de los pedidos recibidos</small>
+      </article>
+      <article>
+        <span>Tasa de rechazo</span
+        ><strong>{{ estadisticas.actividad.tasaRechazo }}<em> %</em></strong
+        ><small
+          >{{ estadisticas.actividad.rechazos }} de
+          {{ estadisticas.actividad.revisiones }} revisiones resueltas</small
+        >
+      </article>
+    </div>
+    <div class="bloques-principales">
+      <article class="tarjeta tendencia">
+        <div class="titulo-tarjeta">
+          <div>
+            <p class="antetitulo">ACTIVIDAD POR FECHA</p>
+            <h2>Entradas y producción</h2>
+          </div>
+          <div class="leyenda">
+            <span><i class="punto recibidas"></i>Recibidas</span
+            ><span><i class="punto terminadas"></i>Terminadas</span>
+          </div>
+        </div>
+        <p class="ayuda">
+          Unidades registradas y terminadas cada día, aunque el pedido se haya creado antes del
+          período.
+        </p>
+        <!-- El gráfico incluye descripción y alternativa tabular; el color no es la única referencia. -->
+        <svg viewBox="0 0 770 245" role="img" aria-labelledby="titulo-grafico descripcion-grafico">
+          <title id="titulo-grafico">Unidades recibidas y terminadas por día</title>
+          <desc id="descripcion-grafico">
+            La línea gris muestra entradas y la línea vino muestra unidades terminadas. Los valores
+            diarios se encuentran en la tabla desplegable.
+          </desc>
+          @for (nivel of [0, 0.5, 1]; track nivel) {
+            <line
+              x1="50"
+              x2="740"
+              [attr.y1]="200 - nivel * 180"
+              [attr.y2]="200 - nivel * 180"
+              class="cuadricula"
+            />
+            <text x="40" [attr.y]="204 - nivel * 180" text-anchor="end" class="eje">
+              {{ escala() * nivel | number: '1.0-0' }}
+            </text>
+          }
+          <polygon [attr.points]="areaTerminadas()" class="area" />
+          <polyline [attr.points]="lineaRecibidas()" class="linea entradas" />
+          <polyline [attr.points]="lineaTerminadas()" class="linea salidas" />
+          @for (punto of puntos(); track punto.fecha) {
+            <circle [attr.cx]="punto.x" [attr.cy]="punto.yTerminadas" r="3" class="marca-dato">
+              <title>
+                {{ etiquetaFecha(punto.fecha) }}: {{ punto.unidadesTerminadas }} unidades
+                terminadas; {{ punto.unidadesRecibidas }} recibidas
+              </title>
+            </circle>
+          }
+          @for (punto of etiquetasFechas(); track punto.fecha) {
+            <text [attr.x]="punto.x" y="229" text-anchor="middle" class="eje">
+              {{ etiquetaFecha(punto.fecha) }}
+            </text>
+          }
+        </svg>
+      </article>
+      <article class="tarjeta distribucion">
+        <p class="antetitulo">ESTADO ACTUAL DE LA CARTERA</p>
+        <h2>Unidades por etapa</h2>
+        <p class="ayuda">Solo pedidos recibidos en el período seleccionado.</p>
+        <div class="barra-distribucion" role="img" aria-label="Distribución de unidades por estado">
+          @for (etapa of estadisticas.distribucion; track etapa.estado) {
+            <span
+              [class]="etapa.estado"
+              [style.width.%]="porcentaje(etapa.unidades, estadisticas.cartera.unidades)"
+              [attr.title]="etiquetas[etapa.estado] + ': ' + etapa.unidades + ' unidades'"
+            ></span>
+          }
+        </div>
+        <ul>
+          @for (etapa of estadisticas.distribucion; track etapa.estado) {
+            <li>
+              <span
+                ><i [class]="'punto ' + etapa.estado"></i>{{ etiquetas[etapa.estado]
+                }}<small>{{ etapa.paquetes | number }} paquetes</small></span
+              ><strong>{{ etapa.unidades | number }}<small>unidades</small></strong>
+            </li>
+          }
+        </ul>
+        <div class="nota-cartera">
+          {{ estadisticas.cartera.completados }} pedidos completados ·
+          {{ estadisticas.cartera.enCurso }} en curso ·
+          {{ estadisticas.cartera.pendientes }} pendientes
+        </div>
+      </article>
+    </div>
+    <div class="bloques-secundarios">
+      <article class="tarjeta">
+        <p class="antetitulo">CARTERA POR CLIENTE</p>
+        <h2>Clientes con mayor volumen</h2>
+        <p class="ayuda">Unidades solicitadas en el período y su avance actual.</p>
+        <div class="clientes">
+          @for (cliente of estadisticas.clientes; track cliente.cliente) {
+            <div class="fila-cliente">
+              <div class="nombre-cliente">
+                <strong>{{ cliente.cliente }}</strong
+                ><span>{{ cliente.unidades | number }} uds.</span>
+              </div>
+              <div class="barra-cliente">
+                <span
+                  [style.width.%]="porcentaje(cliente.unidades, estadisticas.clientes[0].unidades)"
+                ></span>
+              </div>
+              <div class="detalle-cliente">
+                <span>{{ cliente.pedidos }} pedido(s)</span
+                ><span>{{ cliente.avance }} % listo</span>
+              </div>
+            </div>
+          } @empty {
+            <p class="sin-datos">No hay pedidos recibidos en este período.</p>
+          }
+        </div>
+      </article>
+      <article class="tarjeta calidad">
+        <p class="antetitulo">CONTROL DE CALIDAD</p>
+        <h2>Revisar para mejorar</h2>
+        <p class="ayuda">Eventos registrados durante el período seleccionado.</p>
+        <div class="medida">
+          <span>Revisiones resueltas</span
+          ><strong>{{ estadisticas.actividad.revisiones | number }}</strong>
+        </div>
+        <div class="medida">
+          <span>Devoluciones a producción</span
+          ><strong>{{ estadisticas.actividad.rechazos | number }}</strong>
+        </div>
+        <div class="medida">
+          <span>Tiempo medio por paquete terminado</span
+          ><strong>{{
+            estadisticas.actividad.tiempoMedioHoras === null
+              ? 'Sin muestra'
+              : estadisticas.actividad.tiempoMedioHoras + ' h'
+          }}</strong>
+        </div>
+        <p class="nota-calidad">
+          Horas transcurridas desde el primer inicio hasta Listo, incluyendo los ciclos de rechazo.
+          La muestra es de {{ estadisticas.actividad.paquetesTerminados }} paquetes terminados.
+        </p>
+        <div class="lectura">
+          <strong>Cómo leer la tasa de rechazo</strong>
+          <p>
+            Cuenta devoluciones desde Revisión sobre revisiones resueltas. Un mismo paquete puede
+            tener más de una revisión.
+          </p>
+        </div>
+      </article>
+    </div>
+    <details class="tabla-datos">
+      <summary>Consultar datos diarios del gráfico</summary>
+      <div class="desplazamiento">
+        <table>
+          <caption>
+            Movimientos diarios · Guatemala
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Pedidos recibidos</th>
+              <th scope="col">Unidades recibidas</th>
+              <th scope="col">Unidades terminadas</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (dia of estadisticas.serieDiaria; track dia.fecha) {
+              <tr>
+                <td>{{ dia.fecha }}</td>
+                <td>{{ dia.pedidos }}</td>
+                <td>{{ dia.unidadesRecibidas | number }}</td>
+                <td>{{ dia.unidadesTerminadas | number }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <p class="actualizacion">
+      Consulta: {{ estadisticas.periodo.hasta | date: 'dd/MM/yyyy, HH:mm' : '-0600' }} · Datos de
+      demostración. Los indicadores se calculan a partir de los pedidos e historiales guardados.
+    </p>
+  }
+</section>

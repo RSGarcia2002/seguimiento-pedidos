@@ -24,12 +24,20 @@ const esquemaPedido = new Schema(
     cliente: { type: String, required: true, maxlength: 120 },
     cantidad: { type: Number, required: true, min: 1, max: 100000 },
     paquetes: { type: [esquemaPaquete], required: true },
+    // Identifica datos de muestra sin modificar el comportamiento de pedidos manuales.
+    origenDatos: { type: String, enum: ['manual', 'sintetico'], default: 'manual' },
+    loteDatos: { type: String, maxlength: 80 },
+    fechaLoteDatos: { type: Date },
   },
   {
     timestamps: { createdAt: 'fechaCreacion' as const, updatedAt: 'fechaActualizacion' as const },
     versionKey: false,
   },
 );
+
+// Las consultas del panel estadístico filtran por creación o por fecha de movimiento.
+esquemaPedido.index({ fechaCreacion: -1 });
+esquemaPedido.index({ 'paquetes.historial.fecha': -1 });
 
 export const ModeloPedido = model('Pedido', esquemaPedido);
 type DatosPedido = InferSchemaType<typeof esquemaPedido> & { _id: { toString(): string } };
@@ -41,6 +49,7 @@ export function presentarPedido(pedido: DatosPedido, incluirPaquetes = true) {
     numero: pedido.numero,
     cliente: pedido.cliente,
     cantidad: pedido.cantidad,
+    origenDatos: pedido.origenDatos ?? 'manual',
     fechaCreacion: pedido.fechaCreacion,
     fechaActualizacion: pedido.fechaActualizacion,
     ...resumirPaquetes(pedido.paquetes),

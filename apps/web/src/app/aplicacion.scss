@@ -111,3 +111,28 @@ main {
   border-bottom: 2px solid var(--color-acento);
   padding-block: 10px;
 }
+
+/* Navegación entre operación y análisis; conserva espacio útil en teléfonos. */
+.contexto a {
+  color: var(--color-texto-secundario);
+  text-decoration: none;
+  padding-block: 10px;
+  font-size: 14px;
+  border-bottom: 2px solid transparent;
+}
+.contexto a.seccion-activa {
+  color: var(--color-acento);
+  border-color: var(--color-acento);
+}
+@media (max-width: 760px) {
+  .contexto {
+    flex-direction: row;
+    gap: 16px;
+  }
+  .contexto .etiqueta {
+    display: none;
+  }
+  .contexto a {
+    font-size: 13px;
+  }
+}

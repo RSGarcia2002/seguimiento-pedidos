@@ -30,3 +30,11 @@ No se confunde una compilación o una solicitud de despliegue con publicación v
 - Listado y detalle revisados con estilos completos; anchos 1440, 390 y 320 sin desborde.
 - Capturas de la aplicación pública en docs/capturas/.
 - El borrador de correo no se ha enviado.
+
+## Ampliación: datos y estadísticas
+16. [x] Definir procedencia sintética, período temporal y contrato de estadísticas.
+17. [x] Generar y validar 96 pedidos adicionales con ocho clientes y 90 días.
+18. [x] Cargar el lote en Atlas sin sobrescribir pedidos; comprobar segunda carga sin duplicados.
+19. [x] Implementar estadísticas con cohortes, producción, calidad, clientes y gráficos accesibles.
+20. [x] Aprobar compilación, 32 verificaciones backend, prueba Angular y flujo E2E ampliado.
+21. [ ] Verificar el nuevo apartado desde la URL pública y actualizar capturas.

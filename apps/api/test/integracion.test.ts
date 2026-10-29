@@ -191,6 +191,68 @@ prueba('API de pedidos con MongoDB real', async (contexto) => {
         verificar.deepEqual(respuestas.map((respuesta) => respuesta.status).sort(), [201, 409]);
       },
     );
+    await contexto.test(
+      'estadísticas consultan MongoDB y separan métricas con períodos válidos',
+      async () => {
+        const respuesta = await solicitar(aplicacion).get('/api/estadisticas').query({ dias: 7 });
+        verificar.equal(respuesta.status, 200);
+        verificar.equal(respuesta.body.cartera.pedidos, 2);
+        verificar.equal(respuesta.body.cartera.unidades, 251);
+        verificar.equal(respuesta.body.actividad.unidadesTerminadas, 250);
+        verificar.equal(respuesta.body.actividad.rechazos, 1);
+        verificar.equal(respuesta.body.actividad.tasaRechazo, 25);
+        verificar.equal(respuesta.body.serieDiaria.length, 7);
+        verificar.equal(
+          (await solicitar(aplicacion).get('/api/estadisticas').query({ dias: 8 })).status,
+          400,
+        );
+      },
+    );
+    await contexto.test(
+      'incluye producción reciente de un pedido recibido antes del período',
+      async () => {
+        const ahora = Date.now();
+        const anterior = await ModeloPedido.create({
+          numero: 'ANTERIOR-ESTADISTICAS',
+          cliente: 'Fuera de cartera',
+          cantidad: 100,
+          paquetes: [
+            {
+              numero: 1,
+              unidades: 100,
+              estado: 'listo',
+              version: 3,
+              historial: [
+                {
+                  origen: 'pendiente',
+                  destino: 'en_proceso',
+                  fecha: new Date(ahora - 7200000),
+                  motivo: '',
+                },
+                {
+                  origen: 'en_proceso',
+                  destino: 'revision',
+                  fecha: new Date(ahora - 3600000),
+                  motivo: '',
+                },
+                { origen: 'revision', destino: 'listo', fecha: new Date(ahora - 1000), motivo: '' },
+              ],
+            },
+          ],
+        });
+        try {
+          await ModeloPedido.collection.updateOne(
+            { _id: anterior._id },
+            { $set: { fechaCreacion: new Date(ahora - 120 * 86400000) } },
+          );
+          const respuesta = await solicitar(aplicacion).get('/api/estadisticas').query({ dias: 7 });
+          verificar.equal(respuesta.body.cartera.pedidos, 2);
+          verificar.equal(respuesta.body.actividad.unidadesTerminadas, 350);
+        } finally {
+          await ModeloPedido.deleteOne({ _id: anterior._id });
+        }
+      },
+    );
     await contexto.test('los pedidos e historial sobreviven a reconectar MongoDB', async () => {
       await mongoose.disconnect();
       await mongoose.connect(conexion, { dbName: nombreBase });

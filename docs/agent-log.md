@@ -68,3 +68,11 @@ Render quedó live en el commit 012dd5493288bda3ce6e162c54350ad2f1378938.
 Se verificaron HTTP 200, conexión con Atlas, flujo público real, persistencia,
 duplicados, diseño móvil y ausencia de errores de consola. La verificación eliminó
 solamente el pedido temporal que creó; los cuatro ejemplos permanecen disponibles.
+
+## Ampliación de datos y estadísticas
+Se definieron primero procedencia sintética, criterios temporales y contrato de métricas.
+Se implementaron el generador determinista, carga aditiva e idempotente, endpoint estadístico
+con períodos de Guatemala y gráficos SVG con alternativa tabular. Primera carga Atlas:
+96 pedidos nuevos y total 100; segunda carga: cero nuevos. Se conservaron los datos anteriores.
+Se verificaron cartera vs actividad, producción de pedidos anteriores, rechazo por revisión,
+horas transcurridas, estados sin muestra y navegación móvil del panel estadístico.

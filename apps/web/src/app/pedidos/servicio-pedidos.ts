@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
+import type { Estadisticas } from '../estadisticas/tipos';
 import type { ListadoPedidos, NuevoPedido, Paquete, Pedido } from './tipos';
 
 /** Centraliza el acceso a la API y limita las esperas para permitir reintentar un fallo de red. */
@@ -9,6 +10,11 @@ import type { ListadoPedidos, NuevoPedido, Paquete, Pedido } from './tipos';
 export class ServicioPedidos {
   private readonly http = inject(HttpClient);
 
+  estadisticas(dias: number) {
+    return firstValueFrom(
+      this.http.get<Estadisticas>('/api/estadisticas', { params: { dias } }).pipe(timeout(15000)),
+    );
+  }
   listar(busqueda: string, estado: string, pagina: number) {
     const params = new HttpParams()
       .set('busqueda', busqueda.trim())

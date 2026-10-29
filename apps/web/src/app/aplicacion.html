@@ -8,15 +8,25 @@
       ><span class="marca">TATA<span class="punto-marca">.</span></span
       ><span class="descripcion-marca">ACCESORIOS GLOBALES</span></a
     >
-    <div class="contexto">
-      <span class="seccion-activa">Seguimiento de pedidos</span
-      ><span class="etiqueta">CONTROL DE PRODUCCIÓN</span>
-    </div>
+    <nav class="contexto" aria-label="Navegación principal">
+      <a
+        routerLink="/"
+        routerLinkActive="seccion-activa"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+        >Pedidos</a
+      >
+      <a routerLink="/estadisticas" routerLinkActive="seccion-activa" ariaCurrentWhenActive="page"
+        >Estadísticas</a
+      >
+      <span class="etiqueta">CONTROL DE PRODUCCIÓN</span>
+    </nav>
   </div>
 </header>
 <main id="contenido" class="contenedor" tabindex="-1"><router-outlet /></main>
 <footer class="pie">
   <div class="contenedor contenido-pie">
-    <span>Seguimiento de pedidos · TATA</span><span>Prueba técnica · Desarrollado por Randall</span>
+    <span>Seguimiento de pedidos · TATA</span
+    ><span>Entorno de demostración · Datos sintéticos</span>
   </div>
 </footer>

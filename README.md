@@ -20,6 +20,7 @@ Aplicación web para registrar pedidos, dividirlos en paquetes de hasta 100 unid
 - Rechazo desde Revisión hacia En proceso, con motivo opcional e historial persistente.
 - Conteos por estado y avance ponderado por **unidades listas**, no por número de paquetes.
 - Búsqueda literal por número o cliente, filtros, paginación y resumen global de producción.
+- [Estadísticas operativas](https://seguimiento-pedidos-tata.onrender.com/estadisticas) con períodos de 7, 30 y 90 días: entradas, producción, estados, clientes y calidad.
 - Exportación CSV de la página visible, con protección contra fórmulas en campos de texto.
 - Interfaz en español, adaptable a móvil y con navegación por teclado.
 - Control de concurrencia para evitar dobles avances y transiciones sobre datos obsoletos.
@@ -80,6 +81,22 @@ npm run datos:ejemplo
 
 Crea cuatro pedidos `DEMO-*` mediante la API real, con distintos estados y avances. No modifica ejemplos existentes ni los carga automáticamente en producción. Todos los clientes de estos pedidos se identifican como demostración.
 
+
+### Operación de demostración ampliada
+
+```sh
+npm run datos:operacion
+```
+
+Carga un lote de **96 pedidos sintéticos**, ocho clientes ficticios y 90 días de actividad.
+Cada paquete mantiene cantidades, fechas, estados, versiones y rechazos coherentes.
+El lote se identifica con `origenDatos=sintetico`; la interfaz indica que es un entorno de demostración.
+La carga es aditiva: no reemplaza pedidos existentes y repetirla no agrega duplicados.
+En Atlas quedó una muestra inicial de **100 pedidos**: 96 nuevos y los cuatro ejemplos anteriores.
+
+Consulta [la descripción de los datos y métricas](docs/datos-demostracion.md) para reproducirla.
+Las estadísticas se consultan desde MongoDB, no son valores fijos en la interfaz.
+
 ## Pruebas y compilación
 
 Con MongoDB local disponible en el puerto 27019:
@@ -131,6 +148,7 @@ La tipografía Jost se sirve localmente. La marca textual es una aproximación t
 
 | Método | Ruta | Función |
 | --- | --- | --- |
+| GET | `/api/estadisticas?dias=30` | Métricas de cartera, actividad y calidad |
 | GET | `/api/salud` | Disponibilidad de API y conexión |
 | GET | `/api/pedidos` | Listado, filtros y resumen global |
 | POST | `/api/pedidos` | Crear pedido y paquetes |
