@@ -1,6 +1,6 @@
 # Especificación: seguimiento de pedidos
 
-Estado: especificación inicial, previa a la implementación de negocio.
+Estado: especificación definida antes de implementar; versión v1 implementada y verificada.
 
 ## Objetivo
 Registrar pedidos y seguir su producción por paquetes, con persistencia en MongoDB.
@@ -42,7 +42,7 @@ texto #121212, acento vino #9E252D y oscuro secundario #242833.
 Usar superficies limpias, bordes discretos, esquinas de 4px y jerarquía clara.
 Centralizar colores en variables CSS; conservar etiquetas textuales para los estados.
 El diseño debe funcionar desde 320px de ancho y permitir navegación por teclado.
-La pantalla inicial continúa identificándose como versión en desarrollo.
+La versión final identifica el panel como control de producción para la demostración técnica.
 
 ## Contrato de implementación v1
 - Estados técnicos: pendiente, en_proceso, revision, listo; etiquetas visibles en español.

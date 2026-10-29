@@ -2,7 +2,15 @@
 
 Aplicación web para registrar pedidos, dividirlos en paquetes de hasta 100 unidades y dar seguimiento a su producción. Desarrollada con **Angular, Node.js, Express, MongoDB y TypeScript**, utilizando **SDD con apoyo de Codex**.
 
-**Estado:** funcional y verificada localmente con MongoDB Atlas. El servicio gratuito en Render está creado; la publicación sigue pendiente de verificar la conectividad desde Render a Atlas. Repositorio público: [RSGarcia2002/seguimiento-pedidos](https://github.com/RSGarcia2002/seguimiento-pedidos).
+**Estado:** publicada y verificada con MongoDB Atlas.
+
+- **Aplicación:** [seguimiento-pedidos-tata.onrender.com](https://seguimiento-pedidos-tata.onrender.com/)
+- **Código público:** [RSGarcia2002/seguimiento-pedidos](https://github.com/RSGarcia2002/seguimiento-pedidos)
+- **Correo preparado:** [borrador de entrega](docs/entrega.md).
+- **Demostración:** [guía de presentación](docs/guia-presentacion.md).
+
+![Panel público de seguimiento de pedidos](docs/capturas/panel.png)
+
 
 ## Funcionalidades
 
@@ -164,7 +172,11 @@ Esta es una aplicación de demostración para evaluación técnica, con datos de
 
 Para mantener acotado el tamaño del documento, cada pedido admite hasta 100 000 unidades (1000 paquetes). Número: máximo 50 caracteres; cliente: 120; motivo: 300. El listado se pagina a 12 pedidos por defecto.
 
-**Pendiente de entrega:** completar y verificar el despliegue en Render y añadir la URL pública validada a este README. La CI no está activada: la credencial de publicación carece del permiso `workflow`; la plantilla queda incluida para habilitarla.
+**Publicación verificada:** Render activo, API con respuesta HTTP 200 y Atlas conectado; creación 100/100/50, rechazo, avance 20%, persistencia tras recargar y duplicados comprobados desde internet. El listado y detalle se revisaron en escritorio y móvil, incluidos 320px, con estilos aplicados y sin errores de consola.
+
+El plan gratuito de Render puede tardar aproximadamente un minuto al reactivarse después de inactividad. [Referencia de Render](https://render.com/docs/free).
+
+**Mejora opcional pendiente:** La CI no está activada: la credencial de publicación carece del permiso `workflow`; la plantilla queda incluida para habilitarla.
 
 ## Convenciones
 

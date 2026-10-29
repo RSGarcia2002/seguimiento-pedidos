@@ -60,3 +60,11 @@ Al verificar los estilos completos, la prueba móvil detectó que el texto acces
 posicionado dentro de la tabla podía ampliar el ancho de la página. Se definió el
 contenedor de la tabla como referencia de posicionamiento para mantener ese texto
 contenido dentro de su área desplazable, conservando la accesibilidad.
+
+## Publicación verificada
+Con los dos rangos de salida de Render autorizados por el usuario en Atlas,
+el servicio arrancó correctamente. Tras corregir los estilos y el contenedor de tabla,
+Render quedó live en el commit 012dd5493288bda3ce6e162c54350ad2f1378938.
+Se verificaron HTTP 200, conexión con Atlas, flujo público real, persistencia,
+duplicados, diseño móvil y ausencia de errores de consola. La verificación eliminó
+solamente el pedido temporal que creó; los cuatro ejemplos permanecen disponibles.
