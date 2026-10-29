@@ -136,7 +136,9 @@ input.ng-invalid.ng-touched {
 }
 
 /* La tabla permite desplazamiento propio en móvil, sin desbordar toda la página. */
+/* Contiene también el texto accesible posicionado dentro de la tabla desplazable. */
 .tabla-contenedor {
+  position: relative;
   overflow-x: auto;
   border: 1px solid var(--color-borde);
   border-radius: 4px;

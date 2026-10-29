@@ -55,3 +55,8 @@ La optimización de CSS crítico de Angular generaba enlaces media=print que se 
 Helmet bloqueaba ese script por la política CSP. El código no relajó la seguridad:
 se desactivó inlineCritical para cargar todo el CSS con un enlace ordinario y se añadió
 una comprobación E2E del color del botón para detectar esta regresión en producción.
+
+Al verificar los estilos completos, la prueba móvil detectó que el texto accesible
+posicionado dentro de la tabla podía ampliar el ancho de la página. Se definió el
+contenedor de la tabla como referencia de posicionamiento para mantener ese texto
+contenido dentro de su área desplazable, conservando la accesibilidad.
