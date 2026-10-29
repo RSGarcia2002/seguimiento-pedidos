@@ -76,3 +76,7 @@ con períodos de Guatemala y gráficos SVG con alternativa tabular. Primera carg
 96 pedidos nuevos y total 100; segunda carga: cero nuevos. Se conservaron los datos anteriores.
 Se verificaron cartera vs actividad, producción de pedidos anteriores, rechazo por revisión,
 horas transcurridas, estados sin muestra y navegación móvil del panel estadístico.
+
+La ampliación quedó publicada en Render y se verificaron sus totales en 7/30/90 días.
+La revisión pública confirmó indicadores coherentes, navegación, tabla diaria, 100 pedidos
+paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.

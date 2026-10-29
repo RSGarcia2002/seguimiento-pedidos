@@ -37,4 +37,9 @@ No se confunde una compilación o una solicitud de despliegue con publicación v
 18. [x] Cargar el lote en Atlas sin sobrescribir pedidos; comprobar segunda carga sin duplicados.
 19. [x] Implementar estadísticas con cohortes, producción, calidad, clientes y gráficos accesibles.
 20. [x] Aprobar compilación, 32 verificaciones backend, prueba Angular y flujo E2E ampliado.
-21. [ ] Verificar el nuevo apartado desde la URL pública y actualizar capturas.
+21. [x] Verificar el nuevo apartado desde la URL pública y actualizar capturas.
+
+Verificación pública de la ampliación: Render live en commit 2f9deae207758918cb25a7b1386baa08d5bb7fe8.
+Los períodos 7/30/90 concuerdan entre serie diaria, cartera, actividad y distribución.
+Se comprobaron navegación, paginación de 100 pedidos, tabla diaria y anchos 1440/390/320.
+Consola del navegador sin errores; capturas públicas actualizadas.

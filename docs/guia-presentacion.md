@@ -8,7 +8,10 @@
 5. Enviarlo de nuevo a Revisión y marcarlo Listo. Explicar por qué el avance es 20%.
 6. Recargar: estados e historial permanecen guardados en MongoDB.
 7. Intentar crear otro pedido con el mismo número y mostrar la validación.
-8. Mostrar el repositorio: especificación, contrato OpenAPI, pruebas y README.
+8. Abrir Estadísticas: cambiar entre 7, 30 y 90 días, mostrar la tabla diaria y explicar
+   que producción del período y avance actual de la cartera son indicadores distintos.
+   Aclarar que los 96 pedidos adicionales son sintéticos y sus clientes ficticios.
+9. Mostrar el repositorio: especificación, contrato OpenAPI, pruebas y README.
 
 ## Decisiones que conviene explicar
 - **SDD:** se definieron reglas y contrato antes de implementar y verificar la aplicación.

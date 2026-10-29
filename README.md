@@ -11,6 +11,8 @@ Aplicación web para registrar pedidos, dividirlos en paquetes de hasta 100 unid
 
 ![Panel público de seguimiento de pedidos](docs/capturas/panel.png)
 
+![Estadísticas operativas de la muestra sintética](docs/capturas/estadisticas.png)
+
 
 ## Funcionalidades
 
