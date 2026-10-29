@@ -97,3 +97,6 @@ paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.
   aprobado en Chrome. Sin desbordamiento horizontal a 1440, 390 y 320 píxeles.
 - Revisión visual del panel con los 100 pedidos de Atlas: 129 alertas actuales
   (108 revisiones y 21 pedidos sin actividad); ningún cambio de datos por el análisis.
+- Publicación aa9a172 confirmada live en Render (dep-dbhtfh4s728c73d5qm4g).
+  Verificación pública GET alertas y POST análisis: reglas/sin_configurar; filtro exacto
+  de cliente: 12 coincidencias válidas. Chrome sin errores y sin desbordamiento móvil.

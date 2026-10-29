@@ -56,3 +56,11 @@ npm run test:simulacion -w @pedidos/api
 Se verifican respuesta válida, agrupación y caché, HTTP 429, HTTP 500, timeout,
 referencias inexistentes y límite diario. Estas pruebas establecen el comportamiento
 de nuestro cliente ante el contrato simulado, no la disponibilidad del servicio real.
+
+## Publicación comprobada
+
+Versión `aa9a172`, despliegue `dep-dbhtfh4s728c73d5qm4g`, estado `live` en Render.
+Se verificaron las alertas y el resumen por reglas en el sitio público, filtro de cliente,
+Chrome sin errores de ejecución y diseño sin desbordamiento a 390 y 320 píxeles.
+Capturas: `docs/capturas/operacion-escritorio.png`, `operacion-movil.png` y
+`filtros-escritorio.png`. Los datos continúan siendo sintéticos.
