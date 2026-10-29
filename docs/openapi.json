@@ -1,0 +1,702 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Seguimiento de pedidos API",
+    "version": "1.0.0",
+    "description": "API de seguimiento de pedidos. Contrato de la implementación v1. Definido antes del código de negocio."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "paths": {
+    "/api/salud": {
+      "get": {
+        "operationId": "consultarSalud",
+        "summary": "Consultar disponibilidad de la API y conexión MongoDB",
+        "responses": {
+          "200": {
+            "description": "Base conectada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "estado",
+                    "baseDatos"
+                  ],
+                  "properties": {
+                    "estado": {
+                      "type": "string",
+                      "enum": [
+                        "correcto",
+                        "degradado"
+                      ]
+                    },
+                    "baseDatos": {
+                      "type": "string",
+                      "enum": [
+                        "conectada",
+                        "desconectada"
+                      ]
+                    }
+                  }
+                },
+                "example": {
+                  "estado": "correcto",
+                  "baseDatos": "conectada"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Base desconectada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "estado",
+                    "baseDatos"
+                  ],
+                  "properties": {
+                    "estado": {
+                      "type": "string",
+                      "enum": [
+                        "correcto",
+                        "degradado"
+                      ]
+                    },
+                    "baseDatos": {
+                      "type": "string",
+                      "enum": [
+                        "conectada",
+                        "desconectada"
+                      ]
+                    }
+                  }
+                },
+                "example": {
+                  "estado": "degradado",
+                  "baseDatos": "desconectada"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pedidos": {
+      "get": {
+        "operationId": "listarPedidos",
+        "summary": "Listar pedidos y resumen global",
+        "parameters": [
+          {
+            "name": "busqueda",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          {
+            "name": "estado",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "todos",
+                "pendiente",
+                "en_curso",
+                "completado"
+              ]
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación correcta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Listado"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "crearPedido",
+        "summary": "Crear pedido con paquetes automáticos",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NuevoPedido"
+              },
+              "example": {
+                "numero": "PED-001",
+                "cliente": "Cliente de ejemplo",
+                "cantidad": 250
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pedido creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pedidos/{id}": {
+      "get": {
+        "operationId": "consultarPedido",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operación correcta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pedidos/{id}/paquetes/{paqueteId}/transiciones": {
+      "post": {
+        "operationId": "cambiarEstadoPaquete",
+        "summary": "Avanzar o rechazar con control de concurrencia",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          },
+          {
+            "name": "paqueteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{24}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Transicion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Operación correcta",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Error de validación o acceso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "codigo",
+              "mensaje"
+            ],
+            "properties": {
+              "codigo": {
+                "type": "string"
+              },
+              "mensaje": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "NuevoPedido": {
+        "type": "object",
+        "required": [
+          "numero",
+          "cliente",
+          "cantidad"
+        ],
+        "properties": {
+          "numero": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "cliente": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "cantidad": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          }
+        }
+      },
+      "Transicion": {
+        "type": "object",
+        "required": [
+          "accion",
+          "estadoActual",
+          "versionActual"
+        ],
+        "properties": {
+          "accion": {
+            "type": "string",
+            "enum": [
+              "avanzar",
+              "rechazar"
+            ]
+          },
+          "estadoActual": {
+            "type": "string",
+            "enum": [
+              "pendiente",
+              "en_proceso",
+              "revision",
+              "listo"
+            ]
+          },
+          "versionActual": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "motivo": {
+            "type": "string",
+            "maxLength": 300
+          }
+        }
+      },
+      "Evento": {
+        "type": "object",
+        "required": [
+          "fecha",
+          "origen",
+          "destino",
+          "motivo"
+        ],
+        "properties": {
+          "fecha": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "origen": {
+            "type": "string",
+            "enum": [
+              "pendiente",
+              "en_proceso",
+              "revision",
+              "listo"
+            ]
+          },
+          "destino": {
+            "type": "string",
+            "enum": [
+              "pendiente",
+              "en_proceso",
+              "revision",
+              "listo"
+            ]
+          },
+          "motivo": {
+            "type": "string"
+          }
+        }
+      },
+      "Paquete": {
+        "type": "object",
+        "required": [
+          "id",
+          "numero",
+          "unidades",
+          "estado",
+          "version",
+          "historial"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "integer"
+          },
+          "unidades": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "pendiente",
+              "en_proceso",
+              "revision",
+              "listo"
+            ]
+          },
+          "version": {
+            "type": "integer"
+          },
+          "historial": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Evento"
+            }
+          }
+        }
+      },
+      "ResumenPedido": {
+        "type": "object",
+        "required": [
+          "id",
+          "numero",
+          "cliente",
+          "cantidad",
+          "fechaCreacion",
+          "fechaActualizacion",
+          "totalPaquetes",
+          "unidadesListas",
+          "avance",
+          "conteos",
+          "estado"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "numero": {
+            "type": "string"
+          },
+          "cliente": {
+            "type": "string"
+          },
+          "cantidad": {
+            "type": "integer"
+          },
+          "fechaCreacion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fechaActualizacion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalPaquetes": {
+            "type": "integer"
+          },
+          "unidadesListas": {
+            "type": "integer"
+          },
+          "avance": {
+            "type": "number"
+          },
+          "conteos": {
+            "type": "object",
+            "required": [
+              "pendiente",
+              "en_proceso",
+              "revision",
+              "listo"
+            ],
+            "properties": {
+              "pendiente": {
+                "type": "integer"
+              },
+              "en_proceso": {
+                "type": "integer"
+              },
+              "revision": {
+                "type": "integer"
+              },
+              "listo": {
+                "type": "integer"
+              }
+            }
+          },
+          "estado": {
+            "type": "string",
+            "enum": [
+              "pendiente",
+              "en_curso",
+              "completado"
+            ]
+          }
+        }
+      },
+      "Pedido": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ResumenPedido"
+          },
+          {
+            "type": "object",
+            "required": [
+              "paquetes"
+            ],
+            "properties": {
+              "paquetes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Paquete"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ResumenGlobal": {
+        "type": "object",
+        "required": [
+          "pedidos",
+          "enCurso",
+          "completados",
+          "unidades",
+          "unidadesListas"
+        ],
+        "properties": {
+          "pedidos": {
+            "type": "integer"
+          },
+          "enCurso": {
+            "type": "integer"
+          },
+          "completados": {
+            "type": "integer"
+          },
+          "unidades": {
+            "type": "integer"
+          },
+          "unidadesListas": {
+            "type": "integer"
+          }
+        }
+      },
+      "Listado": {
+        "type": "object",
+        "required": [
+          "pedidos",
+          "total",
+          "pagina",
+          "totalPaginas",
+          "resumen"
+        ],
+        "properties": {
+          "pedidos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ResumenPedido"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "pagina": {
+            "type": "integer"
+          },
+          "totalPaginas": {
+            "type": "integer"
+          },
+          "resumen": {
+            "$ref": "#/components/schemas/ResumenGlobal"
+          }
+        }
+      }
+    }
+  }
+}
