@@ -1,0 +1,10 @@
+version: 1
+name: gemini-invalido
+slug: gemini-invalido
+protocol: http
+port: 4501
+interceptRequests: true
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true

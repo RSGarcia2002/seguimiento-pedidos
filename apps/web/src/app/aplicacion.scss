@@ -136,3 +136,16 @@ main {
     font-size: 13px;
   }
 }
+
+@media (max-width: 520px) {
+  .barra-principal {
+    flex-wrap: wrap;
+    padding-block: 16px;
+    gap: 12px;
+  }
+  .contexto {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 22px;
+  }
+}

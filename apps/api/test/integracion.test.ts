@@ -12,7 +12,7 @@ prueba('API de pedidos con MongoDB real', async (contexto) => {
   const conexion = process.env['TEST_MONGODB_URI'] ?? 'mongodb://127.0.0.1:27019';
   await mongoose.connect(conexion, { dbName: nombreBase, serverSelectionTimeoutMS: 5000 });
   await ModeloPedido.init();
-  const aplicacion = crearAplicacion(() => mongoose.connection.readyState === 1);
+  const aplicacion = crearAplicacion(() => mongoose.connection.readyState === 1, {});
   let id = '';
   let paqueteId = '';
   const transicionar = (
@@ -250,6 +250,95 @@ prueba('API de pedidos con MongoDB real', async (contexto) => {
           verificar.equal(respuesta.body.actividad.unidadesTerminadas, 350);
         } finally {
           await ModeloPedido.deleteOne({ _id: anterior._id });
+        }
+      },
+    );
+    await contexto.test(
+      'filtra cliente y fechas inclusivas y ordena antes de paginar',
+      async () => {
+        const hoy = new Date(Date.now() - 6 * 3600000).toISOString().slice(0, 10);
+        const filtrado = await solicitar(aplicacion)
+          .get('/api/pedidos')
+          .query({ cliente: 'Cliente Uno', desde: hoy, hasta: hoy });
+        verificar.equal(filtrado.status, 200);
+        verificar.equal(filtrado.body.total, 1);
+        verificar.equal(filtrado.body.pedidos[0].numero, 'PED-001');
+        verificar.ok(filtrado.body.clientesDisponibles.includes('Cliente Uno'));
+        const ordenado = await solicitar(aplicacion)
+          .get('/api/pedidos')
+          .query({ orden: 'menor_avance', limite: 1 });
+        verificar.equal(ordenado.body.pedidos[0].numero, 'CONCURRENTE');
+        for (const consulta of [
+          { desde: '2026-02-30' },
+          { desde: '2026-02-02', hasta: '2026-02-01' },
+          { orden: 'inventado' },
+        ]) {
+          verificar.equal(
+            (await solicitar(aplicacion).get('/api/pedidos').query(consulta)).status,
+            400,
+          );
+        }
+      },
+    );
+    await contexto.test(
+      'alertas y análisis consultan evidencia real sin modificar pedidos',
+      async () => {
+        const ahora = Date.now();
+        const historial = [
+          { origen: 'pendiente', destino: 'en_proceso', fecha: new Date(ahora - 200 * 3600000) },
+          { origen: 'en_proceso', destino: 'revision', fecha: new Date(ahora - 190 * 3600000) },
+          { origen: 'revision', destino: 'en_proceso', fecha: new Date(ahora - 189 * 3600000) },
+          { origen: 'en_proceso', destino: 'revision', fecha: new Date(ahora - 180 * 3600000) },
+          { origen: 'revision', destino: 'en_proceso', fecha: new Date(ahora - 179 * 3600000) },
+          { origen: 'en_proceso', destino: 'revision', fecha: new Date(ahora - 160 * 3600000) },
+        ];
+        const pruebaOperacion = await ModeloPedido.create({
+          numero: 'OPERACION-PRUEBA',
+          cliente: 'C',
+          cantidad: 50,
+          paquetes: [{ numero: 1, unidades: 50, estado: 'revision', version: 6, historial }],
+        });
+        try {
+          await ModeloPedido.collection.updateOne(
+            { _id: pruebaOperacion._id },
+            {
+              $set: {
+                fechaCreacion: new Date(ahora - 220 * 3600000),
+                fechaActualizacion: new Date(ahora - 160 * 3600000),
+              },
+            },
+          );
+          const antes = JSON.stringify(await ModeloPedido.findById(pruebaOperacion._id).lean());
+          const alertas = await solicitar(aplicacion).get('/api/operacion/alertas');
+          verificar.equal(alertas.status, 200);
+          verificar.equal(alertas.body.resumen.total, 3);
+          verificar.equal(alertas.body.resumen.rechazosRepetidos, 1);
+          const revision = await solicitar(aplicacion)
+            .get('/api/operacion/alertas')
+            .query({ tipo: 'revision_demorada' });
+          verificar.equal(revision.body.alertas.length, 1);
+          verificar.equal(revision.body.resumen.total, 3);
+          const analisis = await solicitar(aplicacion)
+            .post('/api/operacion/analisis')
+            .send({ dias: 30 });
+          verificar.equal(analisis.status, 200);
+          verificar.equal(analisis.body.modo, 'reglas');
+          verificar.equal(analisis.body.motivoProveedor, 'sin_configurar');
+          verificar.equal(
+            JSON.stringify(await ModeloPedido.findById(pruebaOperacion._id).lean()),
+            antes,
+          );
+          verificar.equal(
+            (await solicitar(aplicacion).get('/api/operacion/alertas').query({ tipo: 'otro' }))
+              .status,
+            400,
+          );
+          verificar.equal(
+            (await solicitar(aplicacion).post('/api/operacion/analisis').send({ dias: 8 })).status,
+            400,
+          );
+        } finally {
+          await ModeloPedido.deleteOne({ _id: pruebaOperacion._id });
         }
       },
     );

@@ -40,6 +40,7 @@ export interface ResumenGlobal {
   unidadesListas: number;
 }
 export interface ListadoPedidos {
+  clientesDisponibles?: string[];
   pedidos: ResumenPedido[];
   total: number;
   pagina: number;

@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ServicioPedidos } from '../pedidos/servicio-pedidos';
 import { etiquetasEstado } from '../pedidos/tipos';
@@ -7,7 +8,7 @@ import type { Estadisticas } from './tipos';
 /** Gráficos nativos SVG: accesibles, adaptables y sin depender de imágenes o servicios externos. */
 @Component({
   selector: 'app-panel-estadisticas',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './panel-estadisticas.html',
   styleUrl: './panel-estadisticas.scss',
 })

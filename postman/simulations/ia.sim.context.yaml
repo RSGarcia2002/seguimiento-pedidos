@@ -1,0 +1,30 @@
+purpose:
+  stands_in_for: Contrato REST generateContent de Gemini, sin acceso real a Google.
+  unblocks: Validar el cliente del resumen operativo y sus alternativas ante errores, sin costes.
+assumptions:
+  - id: contrato-oficial
+    status: supported
+    claim: La solicitud usa generateContent, x-goog-api-key y salida JSON estructurada.
+    reason: Se modeló únicamente la parte del contrato que utiliza la aplicación.
+    verification: Contrato local y registros HTTP de las seis pruebas del cliente.
+    source: https://ai.google.dev/api/generate-content
+    updated_at: '2026-10-29'
+  - id: comportamiento-aplicacion
+    status: supported
+    claim: El cliente conserva un resumen por reglas ante 429, 500, timeout y referencias inválidas.
+    reason: Las seis pruebas de ia.simulacion.ts pasaron contra Postman local.
+    verification: npm run test:simulacion -w @pedidos/api; registros locales NDJSON.
+    source: apps/api/test/ia.simulacion.ts
+    updated_at: '2026-10-29'
+  - id: proveedor-real
+    status: unknown
+    claim: La cuenta del usuario puede acceder al modelo y su cuota gratuita.
+    reason: No hay una clave configurada ni llamada real ejecutada. La búsqueda de un mock publicado tampoco pudo autenticarse en Postman; se creó uno local.
+    verification: Pendiente de clave gratuita y llamada real; la simulación no demuestra disponibilidad externa.
+    source: https://ai.google.dev/gemini-api/docs/pricing
+    updated_at: '2026-10-29'
+fingerprints:
+  - id: verificacion-local
+    date: '2026-10-29'
+    commit: 798de5f mas cambios locales de seguimiento operativo
+    cli: Postman CLI 1.73.0

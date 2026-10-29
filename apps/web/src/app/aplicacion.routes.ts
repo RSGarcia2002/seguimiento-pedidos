@@ -19,5 +19,11 @@ export const rutas: Routes = [
       import('./estadisticas/panel-estadisticas').then((modulo) => modulo.PanelEstadisticas),
     title: 'Estadísticas | TATA',
   },
+  {
+    path: 'operacion',
+    loadComponent: () =>
+      import('./operacion/panel-operacion').then((modulo) => modulo.PanelOperacion),
+    title: 'Alertas y análisis | TATA',
+  },
   { path: '**', redirectTo: '' },
 ];

@@ -1,0 +1,94 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Gemini generateContent: contrato utilizado",
+    "version": "1.0.0",
+    "description": "Subconjunto de https://ai.google.dev/api/generate-content. Simulaci\u00f3n local, no es un servicio de Google."
+  },
+  "servers": [
+    {
+      "url": "https://generativelanguage.googleapis.com"
+    }
+  ],
+  "paths": {
+    "/v1beta/models/{modelo}:generateContent": {
+      "post": {
+        "parameters": [
+          {
+            "name": "modelo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-goog-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "contents",
+                  "generationConfig"
+                ],
+                "properties": {
+                  "contents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "systemInstruction": {
+                    "type": "object"
+                  },
+                  "generationConfig": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Candidato terminado",
+            "content": {
+              "application/json": {
+                "example": {
+                  "candidates": [
+                    {
+                      "finishReason": "STOP",
+                      "content": {
+                        "parts": [
+                          {
+                            "text": "{\"resumen\": \"Resumen de prueba\", \"prioridades\": []}"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Cuota agotada"
+          },
+          "500": {
+            "description": "Fallo transitorio"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,329 @@
+/* La vista de seguimiento comparte tipografía, colores y controles con el resto del producto. */
+:host {
+  display: block;
+}
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+h1 {
+  font-size: clamp(27px, 3.4vw, 42px);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  margin: 8px 0 12px;
+}
+h1 span {
+  color: var(--color-acento);
+}
+h2 {
+  font-size: 21px;
+  font-weight: 500;
+  margin: 8px 0;
+}
+h3 {
+  font-size: 17px;
+  margin: 16px 0 8px;
+  font-weight: 500;
+}
+.antetitulo {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--color-texto-secundario);
+  margin: 0;
+}
+.descripcion {
+  font-size: 14px;
+  color: var(--color-texto-secundario);
+  margin: 0;
+}
+small {
+  font-size: 11px;
+  color: var(--color-texto-secundario);
+}
+.indicadores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+  margin-bottom: 24px;
+}
+.indicadores article {
+  padding: 20px;
+  border-right: 1px solid var(--color-borde);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.indicadores article:last-child {
+  border-right: 0;
+}
+.indicadores article:first-child {
+  background: var(--color-acento-suave);
+}
+.indicadores article:first-child strong {
+  color: var(--color-acento);
+}
+.indicadores article > span {
+  font-size: 13px;
+  color: var(--color-texto-secundario);
+}
+.indicadores strong {
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.asistente {
+  padding: 24px;
+  border: 1px solid #d8c2c5;
+  border-top: 3px solid var(--color-acento);
+  border-radius: 4px;
+  margin-bottom: 32px;
+}
+.cabecera-asistente {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+}
+.cabecera-asistente p:not(.antetitulo) {
+  font-size: 13px;
+  color: var(--color-texto-secundario);
+  margin: 8px 0 0;
+  max-width: 500px;
+}
+.controles-analisis {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+}
+.controles-analisis label {
+  font-size: 11px;
+  color: var(--color-texto-secundario);
+}
+select {
+  display: block;
+  margin-top: 4px;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+  background: white;
+  color: var(--color-texto);
+}
+.resultado-analisis {
+  border-top: 1px solid var(--color-borde);
+  padding-top: 20px;
+  margin-top: 24px;
+}
+.origen-analisis {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+.origen-analisis > span {
+  font-size: 11px;
+  background: var(--color-acento-suave);
+  color: var(--color-acento);
+  padding: 5px 8px;
+  border-radius: 3px;
+}
+.resumen-analisis {
+  font-size: 15px;
+  line-height: 1.8;
+}
+.metricas-analisis {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--color-texto-secundario);
+}
+.metricas-analisis span {
+  background: var(--color-superficie);
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+.prioridades {
+  padding-left: 24px;
+  margin-bottom: 0;
+}
+.prioridades li {
+  padding: 16px 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-borde);
+}
+.prioridades li:last-child {
+  border: 0;
+}
+.prioridades strong {
+  font-weight: 500;
+}
+.prioridades p {
+  margin: 5px 0;
+}
+.prioridades a {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--color-acento);
+  font-size: 12px;
+  text-decoration: none;
+}
+.aviso-proveedor {
+  background: var(--color-superficie);
+  font-size: 11px;
+  padding: 12px;
+  color: var(--color-texto-secundario);
+  margin: 12px 0 0;
+}
+.barra-alertas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.filtros {
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid var(--color-borde);
+  flex-wrap: wrap;
+}
+.filtros button {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 10px 0;
+  color: var(--color-texto-secundario);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.filtros .activo {
+  color: var(--color-acento);
+  border-color: var(--color-acento);
+}
+.alertas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.tarjeta-alerta {
+  padding: 20px;
+  border: 1px solid var(--color-borde);
+  border-radius: 4px;
+}
+.titulo-alerta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.prioridad {
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.alta {
+  color: var(--color-acento);
+  background: var(--color-acento-suave);
+}
+.media {
+  color: #795315;
+  background: #f7eedf;
+}
+.tarjeta-alerta p {
+  font-size: 13px;
+  margin: 8px 0;
+}
+.pedido-alerta {
+  color: var(--color-texto-secundario);
+  overflow-wrap: anywhere;
+}
+.pedido-alerta strong {
+  font-weight: 500;
+}
+.tarjeta-alerta .accion-sugerida {
+  color: var(--color-texto-secundario);
+  font-size: 12px;
+}
+.enlace-pedido {
+  display: inline-block;
+  color: var(--color-acento);
+  font-size: 12px;
+  margin-top: 12px;
+  text-decoration: none;
+}
+.nota {
+  font-size: 11px;
+  color: var(--color-texto-secundario);
+  margin-top: 20px;
+}
+.estado-vacio,
+.estado-analisis {
+  padding: 32px 16px;
+  color: var(--color-texto-secundario);
+  font-size: 14px;
+  text-align: center;
+}
+.error {
+  color: var(--color-acento);
+  background: var(--color-acento-suave);
+  padding: 14px;
+  font-size: 13px;
+}
+@media (max-width: 950px) {
+  .cabecera-asistente {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 650px) {
+  .cabecera {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .indicadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .indicadores article {
+    padding: 16px;
+    border-bottom: 1px solid var(--color-borde);
+  }
+  .indicadores article:nth-child(2) {
+    border-right: 0;
+  }
+  .indicadores article:nth-child(3),
+  .indicadores article:nth-child(4) {
+    border-bottom: 0;
+  }
+  .indicadores strong {
+    font-size: 28px;
+  }
+  .asistente {
+    padding: 18px;
+  }
+  .controles-analisis {
+    flex-wrap: wrap;
+  }
+  .origen-analisis {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .alertas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .titulo-alerta {
+    flex-wrap: wrap;
+  }
+  .filtros {
+    gap: 14px;
+  }
+  .filtros button {
+    font-size: 11px;
+  }
+}

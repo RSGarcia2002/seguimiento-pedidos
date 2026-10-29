@@ -27,24 +27,15 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "estado",
-                    "baseDatos"
-                  ],
+                  "required": ["estado", "baseDatos"],
                   "properties": {
                     "estado": {
                       "type": "string",
-                      "enum": [
-                        "correcto",
-                        "degradado"
-                      ]
+                      "enum": ["correcto", "degradado"]
                     },
                     "baseDatos": {
                       "type": "string",
-                      "enum": [
-                        "conectada",
-                        "desconectada"
-                      ]
+                      "enum": ["conectada", "desconectada"]
                     }
                   }
                 },
@@ -61,24 +52,15 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": [
-                    "estado",
-                    "baseDatos"
-                  ],
+                  "required": ["estado", "baseDatos"],
                   "properties": {
                     "estado": {
                       "type": "string",
-                      "enum": [
-                        "correcto",
-                        "degradado"
-                      ]
+                      "enum": ["correcto", "degradado"]
                     },
                     "baseDatos": {
                       "type": "string",
-                      "enum": [
-                        "conectada",
-                        "desconectada"
-                      ]
+                      "enum": ["conectada", "desconectada"]
                     }
                   }
                 },
@@ -112,12 +94,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "todos",
-                "pendiente",
-                "en_curso",
-                "completado"
-              ]
+              "enum": ["todos", "pendiente", "en_curso", "completado"]
             }
           },
           {
@@ -139,6 +116,39 @@
               "minimum": 1,
               "maximum": 100,
               "default": 12
+            }
+          },
+          {
+            "name": "cliente",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "desde",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "hasta",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "orden",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["recientes", "antiguos", "menor_avance", "sin_movimiento"],
+              "default": "recientes"
             }
           }
         ],
@@ -394,11 +404,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "enum": [
-                7,
-                30,
-                90
-              ],
+              "enum": [7, 30, 90],
               "default": 30
             }
           }
@@ -426,22 +432,84 @@
           }
         }
       }
+    },
+    "/api/operacion/alertas": {
+      "get": {
+        "operationId": "consultarAlertas",
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["todos", "revision_demorada", "pedido_inactivo", "rechazos_repetidos"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Alertas de solo lectura, resumen global, umbrales y hasta 50 resultados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RespuestaAlertas"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Filtro inválido"
+          }
+        }
+      }
+    },
+    "/api/operacion/analisis": {
+      "post": {
+        "operationId": "analizarOperacion",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["dias"],
+                "properties": {
+                  "dias": {
+                    "type": "integer",
+                    "enum": [7, 30, 90]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resumen identificado como reglas o IA; prioridades con evidencia verificable y motivo del proveedor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoAnalisis"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Período inválido"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
       "Error": {
         "type": "object",
-        "required": [
-          "error"
-        ],
+        "required": ["error"],
         "properties": {
           "error": {
             "type": "object",
-            "required": [
-              "codigo",
-              "mensaje"
-            ],
+            "required": ["codigo", "mensaje"],
             "properties": {
               "codigo": {
                 "type": "string"
@@ -455,11 +523,7 @@
       },
       "NuevoPedido": {
         "type": "object",
-        "required": [
-          "numero",
-          "cliente",
-          "cantidad"
-        ],
+        "required": ["numero", "cliente", "cantidad"],
         "properties": {
           "numero": {
             "type": "string",
@@ -480,27 +544,15 @@
       },
       "Transicion": {
         "type": "object",
-        "required": [
-          "accion",
-          "estadoActual",
-          "versionActual"
-        ],
+        "required": ["accion", "estadoActual", "versionActual"],
         "properties": {
           "accion": {
             "type": "string",
-            "enum": [
-              "avanzar",
-              "rechazar"
-            ]
+            "enum": ["avanzar", "rechazar"]
           },
           "estadoActual": {
             "type": "string",
-            "enum": [
-              "pendiente",
-              "en_proceso",
-              "revision",
-              "listo"
-            ]
+            "enum": ["pendiente", "en_proceso", "revision", "listo"]
           },
           "versionActual": {
             "type": "integer",
@@ -514,12 +566,7 @@
       },
       "Evento": {
         "type": "object",
-        "required": [
-          "fecha",
-          "origen",
-          "destino",
-          "motivo"
-        ],
+        "required": ["fecha", "origen", "destino", "motivo"],
         "properties": {
           "fecha": {
             "type": "string",
@@ -527,21 +574,11 @@
           },
           "origen": {
             "type": "string",
-            "enum": [
-              "pendiente",
-              "en_proceso",
-              "revision",
-              "listo"
-            ]
+            "enum": ["pendiente", "en_proceso", "revision", "listo"]
           },
           "destino": {
             "type": "string",
-            "enum": [
-              "pendiente",
-              "en_proceso",
-              "revision",
-              "listo"
-            ]
+            "enum": ["pendiente", "en_proceso", "revision", "listo"]
           },
           "motivo": {
             "type": "string"
@@ -550,14 +587,7 @@
       },
       "Paquete": {
         "type": "object",
-        "required": [
-          "id",
-          "numero",
-          "unidades",
-          "estado",
-          "version",
-          "historial"
-        ],
+        "required": ["id", "numero", "unidades", "estado", "version", "historial"],
         "properties": {
           "id": {
             "type": "string"
@@ -572,12 +602,7 @@
           },
           "estado": {
             "type": "string",
-            "enum": [
-              "pendiente",
-              "en_proceso",
-              "revision",
-              "listo"
-            ]
+            "enum": ["pendiente", "en_proceso", "revision", "listo"]
           },
           "version": {
             "type": "integer"
@@ -637,12 +662,7 @@
           },
           "conteos": {
             "type": "object",
-            "required": [
-              "pendiente",
-              "en_proceso",
-              "revision",
-              "listo"
-            ],
+            "required": ["pendiente", "en_proceso", "revision", "listo"],
             "properties": {
               "pendiente": {
                 "type": "integer"
@@ -660,18 +680,11 @@
           },
           "estado": {
             "type": "string",
-            "enum": [
-              "pendiente",
-              "en_curso",
-              "completado"
-            ]
+            "enum": ["pendiente", "en_curso", "completado"]
           },
           "origenDatos": {
             "type": "string",
-            "enum": [
-              "manual",
-              "sintetico"
-            ],
+            "enum": ["manual", "sintetico"],
             "description": "Procedencia del pedido; los datos generados son ficticios."
           }
         }
@@ -683,9 +696,7 @@
           },
           {
             "type": "object",
-            "required": [
-              "paquetes"
-            ],
+            "required": ["paquetes"],
             "properties": {
               "paquetes": {
                 "type": "array",
@@ -699,13 +710,7 @@
       },
       "ResumenGlobal": {
         "type": "object",
-        "required": [
-          "pedidos",
-          "enCurso",
-          "completados",
-          "unidades",
-          "unidadesListas"
-        ],
+        "required": ["pedidos", "enCurso", "completados", "unidades", "unidadesListas"],
         "properties": {
           "pedidos": {
             "type": "integer"
@@ -726,13 +731,7 @@
       },
       "Listado": {
         "type": "object",
-        "required": [
-          "pedidos",
-          "total",
-          "pagina",
-          "totalPaginas",
-          "resumen"
-        ],
+        "required": ["pedidos", "total", "pagina", "totalPaginas", "resumen"],
         "properties": {
           "pedidos": {
             "type": "array",
@@ -751,28 +750,22 @@
           },
           "resumen": {
             "$ref": "#/components/schemas/ResumenGlobal"
+          },
+          "clientesDisponibles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
       "Estadisticas": {
         "type": "object",
-        "required": [
-          "periodo",
-          "cartera",
-          "actividad",
-          "distribucion",
-          "clientes",
-          "serieDiaria"
-        ],
+        "required": ["periodo", "cartera", "actividad", "distribucion", "clientes", "serieDiaria"],
         "properties": {
           "periodo": {
             "type": "object",
-            "required": [
-              "dias",
-              "desde",
-              "hasta",
-              "zonaHoraria"
-            ],
+            "required": ["dias", "desde", "hasta", "zonaHoraria"],
             "properties": {
               "dias": {
                 "type": "integer"
@@ -915,6 +908,233 @@
                 "unidadesTerminadas": {
                   "type": "integer"
                 }
+              }
+            }
+          }
+        }
+      },
+      "AlertaOperativa": {
+        "type": "object",
+        "required": [
+          "id",
+          "tipo",
+          "prioridad",
+          "titulo",
+          "detalle",
+          "pedidoId",
+          "pedidoNumero",
+          "cliente",
+          "paqueteId",
+          "paqueteNumero",
+          "horasSinMovimiento",
+          "rechazos",
+          "ultimaActividad",
+          "accionSugerida"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": ["revision_demorada", "pedido_inactivo", "rechazos_repetidos"]
+          },
+          "prioridad": {
+            "type": "string",
+            "enum": ["alta", "media"]
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "detalle": {
+            "type": "string"
+          },
+          "pedidoId": {
+            "type": "string"
+          },
+          "pedidoNumero": {
+            "type": "string"
+          },
+          "cliente": {
+            "type": "string"
+          },
+          "paqueteId": {
+            "type": "string",
+            "nullable": true
+          },
+          "paqueteNumero": {
+            "type": "integer",
+            "nullable": true
+          },
+          "horasSinMovimiento": {
+            "type": "number"
+          },
+          "rechazos": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "ultimaActividad": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "accionSugerida": {
+            "type": "string"
+          }
+        }
+      },
+      "RespuestaAlertas": {
+        "type": "object",
+        "required": [
+          "fechaConsulta",
+          "umbrales",
+          "resumen",
+          "alertas",
+          "totalFiltrado",
+          "iaDisponible"
+        ],
+        "properties": {
+          "fechaConsulta": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "umbrales": {
+            "type": "object",
+            "required": ["revisionHoras", "inactividadHoras", "rechazosMinimos"],
+            "properties": {
+              "revisionHoras": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "inactividadHoras": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "rechazosMinimos": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "resumen": {
+            "type": "object",
+            "required": ["total", "revisionDemorada", "pedidosInactivos", "rechazosRepetidos"],
+            "properties": {
+              "total": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "revisionDemorada": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "pedidosInactivos": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "rechazosRepetidos": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "alertas": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/AlertaOperativa"
+            }
+          },
+          "totalFiltrado": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "iaDisponible": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ResultadoAnalisis": {
+        "type": "object",
+        "required": [
+          "modo",
+          "proveedor",
+          "motivoProveedor",
+          "fechaGeneracion",
+          "resumen",
+          "prioridades",
+          "metricas"
+        ],
+        "properties": {
+          "modo": {
+            "type": "string",
+            "enum": ["reglas", "ia"]
+          },
+          "proveedor": {
+            "type": "string",
+            "nullable": true
+          },
+          "motivoProveedor": {
+            "type": "string",
+            "enum": [
+              "sin_configurar",
+              "disponible",
+              "limite_aplicativo",
+              "cuota_agotada",
+              "respuesta_no_valida",
+              "no_disponible"
+            ]
+          },
+          "fechaGeneracion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resumen": {
+            "type": "string"
+          },
+          "prioridades": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": "object",
+              "required": ["alerta", "explicacion"],
+              "properties": {
+                "alerta": {
+                  "$ref": "#/components/schemas/AlertaOperativa"
+                },
+                "explicacion": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "metricas": {
+            "type": "object",
+            "required": [
+              "dias",
+              "pedidosPeriodo",
+              "unidadesTerminadas",
+              "avanceCartera",
+              "alertasActivas"
+            ],
+            "properties": {
+              "dias": {
+                "type": "integer",
+                "enum": [7, 30, 90]
+              },
+              "pedidosPeriodo": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "unidadesTerminadas": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "avanceCartera": {
+                "type": "number"
+              },
+              "alertasActivas": {
+                "type": "integer",
+                "minimum": 0
               }
             }
           }

@@ -24,7 +24,7 @@ prueba(
     );
     await pagina.getByRole('button', { name: 'Nuevo pedido' }).click();
     await pagina.getByLabel('Número de pedido').fill(numeroPrueba);
-    await pagina.getByLabel('Cliente', { exact: false }).fill('Cliente de prueba de interfaz');
+    await pagina.getByRole('dialog').locator('#cliente').fill('Cliente de prueba de interfaz');
     await pagina.getByLabel('Cantidad de unidades').fill('250');
     await esperar(
       pagina.getByText('3 paquete(s): 2 × 100 unidades + 1 × 50 unidades'),
@@ -67,7 +67,7 @@ prueba(
     }
     await pagina.getByRole('button', { name: 'Nuevo pedido' }).click();
     await pagina.getByLabel('Número de pedido').fill(numeroPrueba.toLowerCase());
-    await pagina.getByLabel('Cliente', { exact: false }).fill('Otro cliente');
+    await pagina.getByRole('dialog').locator('#cliente').fill('Otro cliente');
     await pagina.getByLabel('Cantidad de unidades').fill('1');
     await pagina.getByRole('button', { name: 'Crear pedido', exact: true }).click();
     await esperar(pagina.getByRole('alert')).toContainText('Ya existe un pedido con ese número.');
@@ -83,6 +83,19 @@ prueba(
     await esperar(pagina.locator('.cargando')).toHaveCount(0);
     await pagina.getByText('Consultar datos diarios del gráfico').click();
     await esperar(pagina.locator('tbody tr')).toHaveCount(7);
+    for (const ancho of [1440, 390, 320]) {
+      await pagina.setViewportSize({ width: ancho, height: 900 });
+      esperar(
+        await pagina.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      ).toBeTruthy();
+    }
+    await pagina.getByRole('link', { name: 'Alertas', exact: true }).click();
+    await esperar(
+      pagina.getByRole('heading', { name: 'Atención donde hace falta.' }),
+    ).toBeVisible();
+    await pagina.getByRole('button', { name: 'Generar resumen', exact: true }).click();
+    await esperar(pagina.locator('.origen-analisis')).toContainText('Reglas de seguimiento');
+    await esperar(pagina.locator('.aviso-proveedor')).toContainText('no está activada');
     for (const ancho of [1440, 390, 320]) {
       await pagina.setViewportSize({ width: ancho, height: 900 });
       esperar(

@@ -188,7 +188,7 @@ Render proporciona `PORT`; el servidor escucha conexiones externas y cierra de f
 
 ## Alcance y límites
 
-Esta es una aplicación de demostración para evaluación técnica, con datos de ejemplo y sin autenticación o separación por usuarios. No se implementan edición o eliminación de pedidos, para conservar la consistencia de cantidades e historial. El extra consiste en historial de cambios y exportación; no se integró un proveedor de IA en tiempo de ejecución.
+Esta es una aplicación de demostración para evaluación técnica, con datos de ejemplo y sin autenticación o separación por usuarios. No se implementan edición o eliminación de pedidos, para conservar la consistencia de cantidades e historial. Los extras incluyen historial, exportación, estadísticas, filtros y alertas con resumen por reglas. La integración opcional con Gemini está implementada y probada mediante simulación HTTP; no está activada ni verificada contra Google sin una clave.
 
 Para mantener acotado el tamaño del documento, cada pedido admite hasta 100 000 unidades (1000 paquetes). Número: máximo 50 caracteres; cliente: 120; motivo: 300. El listado se pagina a 12 pedidos por defecto.
 
@@ -201,3 +201,7 @@ El plan gratuito de Render puede tardar aproximadamente un minuto al reactivarse
 ## Convenciones
 
 Código propio, comentarios y documentación en español. Se conservan los identificadores exigidos por frameworks, formatos y herramientas. Los comentarios explican intención, reglas y decisiones. No se publican archivos `.env`, credenciales ni datos de ejecución.
+
+## Alertas y resumen operativo
+
+Disponible en `/operacion`: revisiones detenidas, pedidos sin actividad y rechazos repetidos, con evidencia y enlaces. Funciona sin pagos ni claves mediante reglas explícitas. El listado permite filtros por cliente y fechas, y orden por avance o antigüedad. Consulta [criterios, IA opcional y pruebas](docs/operacion.md).

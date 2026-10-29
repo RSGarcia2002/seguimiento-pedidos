@@ -21,8 +21,7 @@
   en la misma escritura; un doble clic no puede saltar estados.
 - **Avance:** suma de unidades de paquetes Listos dividida entre unidades totales.
 - **Persistencia:** base real; las pruebas comprueban una desconexión y reconexión.
-- **Extra:** historial con motivos de rechazo y exportación CSV. No se necesita una API de IA
-  para operar; la IA se utilizó como agente durante el desarrollo.
+- **Extra:** historial con motivos de rechazo y exportación CSV. Incluye estadísticas, filtros y alertas con resumen por reglas. No requiere una clave para operar. Gemini es opcional y permanece desactivado sin configuración; se probó con una simulación HTTP local.
 - **Publicación:** un servidor Express sirve API y Angular desde el mismo origen; Atlas guarda
   los datos fuera del sistema de archivos del alojamiento.
 

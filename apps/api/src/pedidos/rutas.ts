@@ -1,7 +1,9 @@
 import { Router } from 'express';
-import { isObjectIdOrHexString, type QueryFilter } from 'mongoose';
+import { isObjectIdOrHexString, type QueryFilter, type PipelineStage } from 'mongoose';
 import { ErrorNegocio, validarNuevoPedido, validarTransicion } from '../dominio/pedidos.js';
-import { ModeloPedido, presentarPedido } from './modelo.js';
+import { ModeloPedido, presentarPedido, type DatosPedido } from './modelo.js';
+
+import { validarFechaFiltro } from './filtros.js';
 
 export const rutasPedidos = Router();
 
@@ -33,6 +35,29 @@ rutasPedidos.get('/', async (solicitud, respuesta) => {
   )
     throw new ErrorNegocio(400, 'CONSULTA_INVALIDA', 'Los filtros no son válidos.');
   const filtro: QueryFilter<InstanceType<typeof ModeloPedido>> = {};
+  const cliente = solicitud.query['cliente'] ?? '';
+  const orden = solicitud.query['orden'] ?? 'recientes';
+  if (
+    typeof cliente !== 'string' ||
+    cliente.length > 120 ||
+    typeof orden !== 'string' ||
+    !['recientes', 'antiguos', 'menor_avance', 'sin_movimiento'].includes(orden)
+  )
+    throw new ErrorNegocio(400, 'CONSULTA_INVALIDA', 'Cliente u orden no válidos.');
+  if (cliente.trim()) filtro.cliente = cliente.trim();
+  const desde = validarFechaFiltro(solicitud.query['desde']);
+  const hasta = validarFechaFiltro(solicitud.query['hasta']);
+  if (desde && hasta && desde > hasta)
+    throw new ErrorNegocio(
+      400,
+      'FECHAS_INVERTIDAS',
+      'La fecha inicial debe ser anterior o igual a la final.',
+    );
+  if (desde || hasta)
+    filtro.fechaCreacion = {
+      ...(desde ? { $gte: desde } : {}),
+      ...(hasta ? { $lt: new Date(hasta.getTime() + 86400000) } : {}),
+    };
   if (busqueda.trim()) {
     // Se escapan metacaracteres para que la búsqueda sea literal y no una expresión arbitraria.
     const literal = busqueda.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -50,12 +75,38 @@ rutasPedidos.get('/', async (solicitud, respuesta) => {
       { paquetes: { $elemMatch: { estado: { $ne: 'pendiente' } } } },
       { paquetes: { $elemMatch: { estado: { $ne: 'listo' } } } },
     ];
-  const [pedidos, total, resumenes] = await Promise.all([
-    ModeloPedido.find(filtro)
-      .sort({ fechaCreacion: -1, _id: -1 })
-      .skip((pagina - 1) * limite)
-      .limit(limite)
-      .exec(),
+  // El avance se calcula antes de paginar para ordenar todo el conjunto filtrado.
+  const etapas: PipelineStage[] = [{ $match: filtro }];
+  if (orden === 'menor_avance')
+    etapas.push({
+      $addFields: {
+        avanceOrden: {
+          $divide: [
+            {
+              $sum: {
+                $map: {
+                  input: '$paquetes',
+                  as: 'paquete',
+                  in: { $cond: [{ $eq: ['$$paquete.estado', 'listo'] }, '$$paquete.unidades', 0] },
+                },
+              },
+            },
+            '$cantidad',
+          ],
+        },
+      },
+    });
+  const ordenacion: Record<string, 1 | -1> =
+    orden === 'antiguos'
+      ? { fechaCreacion: 1, _id: 1 }
+      : orden === 'menor_avance'
+        ? { avanceOrden: 1, fechaCreacion: 1, _id: 1 }
+        : orden === 'sin_movimiento'
+          ? { fechaActualizacion: 1, _id: 1 }
+          : { fechaCreacion: -1, _id: -1 };
+  etapas.push({ $sort: ordenacion }, { $skip: (pagina - 1) * limite }, { $limit: limite });
+  const [pedidos, total, resumenes, clientesDisponibles] = await Promise.all([
+    ModeloPedido.aggregate<DatosPedido>(etapas),
     ModeloPedido.countDocuments(filtro),
     // El resumen abarca todos los pedidos, independientemente de los filtros del listado.
     ModeloPedido.aggregate([
@@ -112,12 +163,14 @@ rutasPedidos.get('/', async (solicitud, respuesta) => {
       },
       { $project: { _id: 0 } },
     ]),
+    ModeloPedido.distinct('cliente'),
   ]);
   respuesta.json({
     pedidos: pedidos.map((pedido) => presentarPedido(pedido, false)),
     total,
     pagina,
     totalPaginas: Math.ceil(total / limite),
+    clientesDisponibles: clientesDisponibles.sort((a, b) => a.localeCompare(b)),
     resumen: resumenes[0] ?? {
       pedidos: 0,
       completados: 0,

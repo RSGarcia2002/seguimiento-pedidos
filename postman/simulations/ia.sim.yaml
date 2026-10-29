@@ -1,0 +1,30 @@
+simulation: analisis-operativo
+routing: path
+mocks:
+  - name: gemini
+    routeKey: gemini
+    path: postman/mocks/gemini/config.yaml
+  - name: cuota
+    routeKey: cuota
+    path: postman/mocks/gemini/config.yaml
+    scenarios:
+      - overrides:
+          conditions:
+            error: { status_code: 429 }
+  - name: fallo
+    routeKey: fallo
+    path: postman/mocks/gemini/config.yaml
+    scenarios:
+      - overrides:
+          conditions:
+            error: { status_code: 500 }
+  - name: demora
+    routeKey: demora
+    path: postman/mocks/gemini/config.yaml
+    scenarios:
+      - overrides:
+          conditions:
+            latency: { delay_ms: 1000 }
+  - name: invalido
+    routeKey: invalido
+    path: postman/mocks/gemini-invalido/config.yaml

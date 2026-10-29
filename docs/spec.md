@@ -92,3 +92,23 @@ El flujo E2E debe comprobar que el botón primario conserva fondo vino y espacia
   terminados durante el período, incluyendo los ciclos de rechazo; null si no hay muestra.
 - Vista /estadisticas con selector de período, gráficos SVG accesibles, leyendas,
   tabla de datos y mensajes de carga/error. Estadísticas derivadas de MongoDB.
+
+## Ampliación: seguimiento operativo y análisis gratuito
+- Alertas derivadas del estado actual: Revisión sin movimiento >=72h, pedidos no completados
+  sin actividad >=120h y paquetes no listos con >=2 rechazos. Son umbrales de demostración,
+  no incumplimientos de plazos de entrega. No se modifica ningún estado al analizarlos.
+- GET /api/operacion/alertas?tipo=todos|revision_demorada|pedido_inactivo|rechazos_repetidos.
+  Incluye fecha, umbrales, resumen global y hasta 50 alertas ordenadas por prioridad y antigüedad.
+- POST /api/operacion/analisis {dias:7|30|90}: devuelve resumen, prioridades con evidencia,
+  modo=reglas|ia, motivoProveedor y fechaGeneracion. Las alertas son globales; la cartera y
+  producción del resumen respetan el período seleccionado.
+- Sin clave Gemini, sin cuota o ante fallos: resumen determinista identificado como reglas.
+  Integración opcional Gemini 3.1 Flash-Lite para Free Tier sin activar facturación.
+- La IA solo recibe métricas agregadas e IDs internos de alertas; no nombres de clientes,
+  números de pedidos, motivos libres ni credenciales. Solo puede referenciar alertas reales.
+- Tiempo máximo de proveedor 20s, respuesta validada, caché 5min por contexto, solicitudes
+  simultáneas agrupadas y límite aplicativo de 20 generaciones diarias por proceso.
+  No hay cambio automático de proveedor/modelo ni activación de planes pagados.
+- Listado: cliente exacto, desde/hasta (fechas civiles de Guatemala incluyentes) y orden
+  recientes|antiguos|menor_avance|sin_movimiento. Fechas inválidas o invertidas devuelven 400.
+  Los filtros actúan antes de la paginación; el resumen superior continúa siendo global.

@@ -110,7 +110,7 @@ small {
   font-size: 12px;
   color: var(--color-texto-secundario);
 }
-.buscador > div {
+.buscador > div:first-of-type {
   display: flex;
   gap: 8px;
   margin-top: 5px;

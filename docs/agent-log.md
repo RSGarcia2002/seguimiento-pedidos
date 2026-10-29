@@ -80,3 +80,20 @@ horas transcurridas, estados sin muestra y navegación móvil del panel estadís
 La ampliación quedó publicada en Render y se verificaron sus totales en 7/30/90 días.
 La revisión pública confirmó indicadores coherentes, navegación, tabla diaria, 100 pedidos
 paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.
+
+### Seguimiento operativo y alternativa gratuita — 29/10/2026
+
+- Especificación y contrato ampliados antes de implementar alertas, resumen y filtros.
+- Se añadieron tres tipos de alerta con evidencia, exclusión de pedidos terminados y vínculos.
+- El resumen funciona por reglas sin claves. Por preferencia de una entrega gratuita,
+  Gemini queda opcional, desactivado y sin facturación configurada.
+- El cliente externo se verifica mediante seis pruebas HTTP contra Postman local:
+  éxito, caché/agrupación, cuota, error, timeout, referencia inválida y límite diario.
+  No se realizó una llamada real a Google; no se afirma disponibilidad de su cuenta.
+- Un puerto bloqueado por fetch (4190) impidió inicialmente la simulación; se corrigió
+  a 4195. Un selector ambiguo del formulario se corrigió usando el campo dentro del diálogo.
+- Compilación y 41 comprobaciones backend más una prueba Angular aprobadas.
+- Recorrido E2E de creación, rechazo, cierre, CSV, estadísticas y resumen gratuito
+  aprobado en Chrome. Sin desbordamiento horizontal a 1440, 390 y 320 píxeles.
+- Revisión visual del panel con los 100 pedidos de Atlas: 129 alertas actuales
+  (108 revisiones y 21 pedidos sin actividad); ningún cambio de datos por el análisis.

@@ -60,6 +60,10 @@ export class PanelPedidos implements OnInit {
       ) ?? [],
   );
   busqueda = '';
+  cliente = '';
+  desde = '';
+  hasta = '';
+  orden = 'recientes';
   pagina = 1;
   nuevoPedido: NuevoPedido = { numero: '', cliente: '', cantidad: null };
   paqueteRechazado: Paquete | null = null;
@@ -83,7 +87,12 @@ export class PanelPedidos implements OnInit {
     this.cargando.set(true);
     this.error.set('');
     try {
-      const listado = await this.servicio.listar(this.busqueda, this.filtroEstado(), this.pagina);
+      const listado = await this.servicio.listar(this.busqueda, this.filtroEstado(), this.pagina, {
+        cliente: this.cliente,
+        desde: this.desde,
+        hasta: this.hasta,
+        orden: this.orden,
+      });
       if (consulta === this.consultaListado) this.listado.set(listado);
     } catch (error) {
       if (consulta === this.consultaListado) this.error.set(this.mensajeError(error));
@@ -106,8 +115,21 @@ export class PanelPedidos implements OnInit {
     }
   }
   buscar() {
+    if (this.desde && this.hasta && this.desde > this.hasta) {
+      this.error.set('La fecha inicial debe ser anterior o igual a la final.');
+      return;
+    }
     this.pagina = 1;
     void this.cargarListado();
+  }
+  limpiarFiltros() {
+    this.busqueda = '';
+    this.cliente = '';
+    this.desde = '';
+    this.hasta = '';
+    this.orden = 'recientes';
+    this.filtroEstado.set('todos');
+    this.buscar();
   }
   filtrar(estado: string) {
     this.filtroEstado.set(estado);

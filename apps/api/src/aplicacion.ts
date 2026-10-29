@@ -4,6 +4,8 @@ import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { rutasPedidos } from './pedidos/rutas.js';
 import { rutasEstadisticas } from './estadisticas/rutas.js';
+import { crearRutasOperacion } from './operacion/rutas.js';
+import type { ConfiguracionGemini } from './operacion/proveedor-gemini.js';
 import { ErrorNegocio } from './dominio/pedidos.js';
 
 /**
@@ -11,7 +13,10 @@ import { ErrorNegocio } from './dominio/pedidos.js';
  * La consulta de disponibilidad se recibe como dependencia para poder probar
  * el comportamiento HTTP sin necesitar una base de datos real.
  */
-export function crearAplicacion(estaBaseDatosDisponible: () => boolean) {
+export function crearAplicacion(
+  estaBaseDatosDisponible: () => boolean,
+  configuracionIa?: ConfiguracionGemini,
+) {
   const aplicacion = express();
 
   // Reducimos la información expuesta y limitamos el tamaño del JSON recibido.
@@ -31,6 +36,7 @@ export function crearAplicacion(estaBaseDatosDisponible: () => boolean) {
   // Las rutas de negocio comparten origen con Angular, evitando configurar CORS permisivo.
   aplicacion.use('/api/pedidos', rutasPedidos);
   aplicacion.use('/api/estadisticas', rutasEstadisticas);
+  aplicacion.use('/api/operacion', crearRutasOperacion(configuracionIa));
 
   // En producción se entrega el Angular compilado desde este mismo servidor.
   const directorioWeb = fileURLToPath(new URL('../../web/dist/frontend/browser/', import.meta.url));

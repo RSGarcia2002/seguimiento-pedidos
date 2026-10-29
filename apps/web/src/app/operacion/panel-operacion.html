@@ -1,0 +1,174 @@
+<section aria-labelledby="titulo-operacion">
+  <div class="cabecera">
+    <div>
+      <p class="antetitulo">SEGUIMIENTO OPERATIVO</p>
+      <h1 id="titulo-operacion">Atención donde hace falta<span>.</span></h1>
+      <p class="descripcion">Alertas con evidencia para decidir el siguiente paso.</p>
+    </div>
+    <button class="boton secundario" (click)="actualizar()" [disabled]="cargando()">
+      ↻ Actualizar
+    </button>
+  </div>
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+  @if (datos(); as operacion) {
+    <div class="indicadores">
+      <article>
+        <span>Alertas activas</span><strong>{{ operacion.resumen.total }}</strong
+        ><small>Pueden coincidir en un mismo pedido</small>
+      </article>
+      <article>
+        <span>Revisión requiere atención</span
+        ><strong>{{ operacion.resumen.revisionDemorada }}</strong
+        ><small>Al menos {{ operacion.umbrales.revisionHoras }} horas sin movimiento</small>
+      </article>
+      <article>
+        <span>Pedidos sin actividad</span><strong>{{ operacion.resumen.pedidosInactivos }}</strong
+        ><small>Al menos {{ operacion.umbrales.inactividadHoras }} horas sin cambios</small>
+      </article>
+      <article>
+        <span>Rechazos repetidos</span><strong>{{ operacion.resumen.rechazosRepetidos }}</strong
+        ><small
+          >{{ operacion.umbrales.rechazosMinimos }} o más devoluciones en paquetes abiertos</small
+        >
+      </article>
+    </div>
+    <!-- El origen del texto siempre se identifica; un resumen por reglas no se presenta como IA. -->
+    <article class="asistente">
+      <div class="cabecera-asistente">
+        <div>
+          <p class="antetitulo">ASISTENTE OPERATIVO</p>
+          <h2>Una lectura clara para decidir</h2>
+          <p>
+            Combina indicadores del período y alertas actuales. El análisis no modifica pedidos.
+          </p>
+        </div>
+        <div class="controles-analisis">
+          <label for="periodo-analisis"
+            >Período del resumen<select
+              id="periodo-analisis"
+              [ngModel]="dias"
+              (ngModelChange)="dias = $event; resultado.set(null)"
+              [disabled]="analizando()"
+            >
+              <option [ngValue]="7">Últimos 7 días</option>
+              <option [ngValue]="30">Últimos 30 días</option>
+              <option [ngValue]="90">Últimos 90 días</option>
+            </select></label
+          ><button class="boton primario" [disabled]="analizando()" (click)="analizar()">
+            {{
+              analizando()
+                ? 'Analizando…'
+                : operacion.iaDisponible
+                  ? 'Analizar con IA'
+                  : 'Generar resumen'
+            }}
+          </button>
+        </div>
+      </div>
+      @if (errorAnalisis()) {
+        <p class="error" role="alert">{{ errorAnalisis() }}</p>
+      }
+      @if (analizando()) {
+        <p role="status" class="estado-analisis">
+          Preparando un resumen con las evidencias disponibles…
+        </p>
+      }
+      @if (resultado(); as analisis) {
+        <div class="resultado-analisis" aria-live="polite">
+          <div class="origen-analisis">
+            <span>{{
+              analisis.modo === 'ia' ? 'IA · ' + analisis.proveedor : 'Reglas de seguimiento'
+            }}</span
+            ><small
+              >{{ analisis.fechaGeneracion | date: 'dd/MM/yyyy, HH:mm' : '-0600' }} ·
+              Guatemala</small
+            >
+          </div>
+          <p class="resumen-analisis">{{ analisis.resumen }}</p>
+          <div class="metricas-analisis">
+            <span>{{ analisis.metricas.pedidosPeriodo }} pedidos recibidos</span
+            ><span>{{ analisis.metricas.unidadesTerminadas | number }} unidades terminadas</span
+            ><span>{{ analisis.metricas.avanceCartera }} % de avance de cartera</span>
+          </div>
+          <ol class="prioridades">
+            @for (prioridad of analisis.prioridades; track prioridad.alerta.id) {
+              <li>
+                <div>
+                  <strong>{{ prioridad.alerta.titulo }}</strong>
+                  <p>{{ prioridad.explicacion }}</p>
+                  <small>Evidencia: {{ prioridad.alerta.detalle }}</small>
+                </div>
+                <a [routerLink]="['/pedidos', prioridad.alerta.pedidoId]"
+                  >{{ prioridad.alerta.pedidoNumero }}
+                  @if (prioridad.alerta.paqueteNumero) {
+                    · Paquete {{ prioridad.alerta.paqueteNumero }}
+                  }
+                  ↗</a
+                >
+              </li>
+            } @empty {
+              <li>No hay alertas activas con los umbrales actuales.</li>
+            }
+          </ol>
+          @if (analisis.modo === 'reglas') {
+            <p class="aviso-proveedor">{{ avisoProveedor() }}</p>
+          }
+        </div>
+      }
+    </article>
+    <div class="barra-alertas">
+      <h2>Alertas que requieren seguimiento</h2>
+      <div class="filtros" aria-label="Filtrar alertas">
+        @for (opcion of filtros; track opcion.valor) {
+          <button
+            type="button"
+            [class.activo]="filtro() === opcion.valor"
+            [attr.aria-pressed]="filtro() === opcion.valor"
+            (click)="filtrar(opcion.valor)"
+          >
+            {{ opcion.texto }}
+          </button>
+        }
+      </div>
+    </div>
+    @if (cargando()) {
+      <div class="estado-vacio" role="status">Consultando alertas…</div>
+    } @else {
+      <div class="alertas">
+        @for (alerta of operacion.alertas; track alerta.id) {
+          <article class="tarjeta-alerta">
+            <div class="titulo-alerta">
+              <span [class]="'prioridad ' + alerta.prioridad">Prioridad {{ alerta.prioridad }}</span
+              ><small
+                >Último movimiento:
+                {{ alerta.ultimaActividad | date: 'dd/MM/yyyy, HH:mm' : '-0600' }}</small
+              >
+            </div>
+            <h3>{{ alerta.titulo }}</h3>
+            <p class="pedido-alerta">
+              <strong>{{ alerta.pedidoNumero }}</strong> · {{ alerta.cliente }}
+              @if (alerta.paqueteNumero) {
+                · Paquete {{ alerta.paqueteNumero }}
+              }
+            </p>
+            <p>{{ alerta.detalle }}</p>
+            <p class="accion-sugerida">{{ alerta.accionSugerida }}</p>
+            <a class="enlace-pedido" [routerLink]="['/pedidos', alerta.pedidoId]"
+              >Consultar pedido ↗</a
+            >
+          </article>
+        } @empty {
+          <div class="estado-vacio">No hay alertas de este tipo con los umbrales actuales.</div>
+        }
+      </div>
+      <p class="nota">
+        Mostrando {{ operacion.alertas.length }} de {{ operacion.totalFiltrado }} alertas del
+        filtro. Los umbrales orientan el seguimiento; no representan fechas de entrega incumplidas.
+      </p>
+    }
+  } @else if (cargando()) {
+    <div class="estado-vacio" role="status">Consultando la operación…</div>
+  }
+</section>

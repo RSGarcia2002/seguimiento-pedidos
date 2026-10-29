@@ -97,6 +97,34 @@
           ↻
         </button>
       </div>
+      <!-- Los filtros se aplican juntos al buscar y antes de paginar en el servidor. -->
+      <div class="filtros-avanzados">
+        <label for="filtro-cliente"
+          >Cliente<select id="filtro-cliente" name="cliente" [(ngModel)]="cliente">
+            <option value="">Todos los clientes</option>
+            @for (nombre of listado()?.clientesDisponibles ?? []; track nombre) {
+              <option [value]="nombre">{{ nombre }}</option>
+            }
+          </select></label
+        >
+        <label for="fecha-desde"
+          >Desde<input id="fecha-desde" type="date" name="desde" [(ngModel)]="desde"
+        /></label>
+        <label for="fecha-hasta"
+          >Hasta<input id="fecha-hasta" type="date" name="hasta" [(ngModel)]="hasta"
+        /></label>
+        <label for="orden-pedidos"
+          >Ordenar por<select id="orden-pedidos" name="orden" [(ngModel)]="orden">
+            <option value="recientes">Más recientes</option>
+            <option value="antiguos">Más antiguos</option>
+            <option value="menor_avance">Menor avance</option>
+            <option value="sin_movimiento">Último movimiento más antiguo</option>
+          </select></label
+        >
+        <button type="button" class="boton-texto" (click)="limpiarFiltros()">
+          Limpiar filtros
+        </button>
+      </div>
     </form>
     @if (cargando()) {
       <div class="estado-vacio" role="status">Cargando pedidos…</div>

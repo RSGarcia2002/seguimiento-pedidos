@@ -1,4 +1,4 @@
-import { Schema, model, type InferSchemaType } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { estadosPaquete, resumirPaquetes } from '../dominio/pedidos.js';
 
 // El historial vive dentro del paquete: transición e historial se escriben juntos.
@@ -40,7 +40,29 @@ esquemaPedido.index({ fechaCreacion: -1 });
 esquemaPedido.index({ 'paquetes.historial.fecha': -1 });
 
 export const ModeloPedido = model('Pedido', esquemaPedido);
-type DatosPedido = InferSchemaType<typeof esquemaPedido> & { _id: { toString(): string } };
+/** Representación mínima que acepta documentos Mongoose y resultados de agregación. */
+export interface DatosPedido {
+  _id: { toString(): string };
+  numero: string;
+  cliente: string;
+  cantidad: number;
+  fechaCreacion: Date;
+  fechaActualizacion: Date;
+  origenDatos?: 'manual' | 'sintetico';
+  paquetes: {
+    _id: { toString(): string };
+    numero: number;
+    unidades: number;
+    estado: (typeof estadosPaquete)[number];
+    version: number;
+    historial: {
+      fecha: Date;
+      origen: (typeof estadosPaquete)[number];
+      destino: (typeof estadosPaquete)[number];
+      motivo?: string;
+    }[];
+  }[];
+}
 
 /** Separa la representación pública de los detalles internos de Mongoose. */
 export function presentarPedido(pedido: DatosPedido, incluirPaquetes = true) {

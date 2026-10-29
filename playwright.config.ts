@@ -15,7 +15,11 @@ export default defineConfig({
     command: 'npm start -w @pedidos/api',
     url: 'http://127.0.0.1:3100/api/salud',
     reuseExistingServer: false,
-    env: { PORT: '3100', MONGODB_URI: 'mongodb://127.0.0.1:27019/seguimiento_e2e' },
+    env: {
+      PORT: '3100',
+      GEMINI_API_KEY: '',
+      MONGODB_URI: 'mongodb://127.0.0.1:27019/seguimiento_e2e',
+    },
     timeout: 30000,
   },
 });
