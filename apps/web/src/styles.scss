@@ -18,7 +18,9 @@
 }
 
 /* Reglas globales: tamaño predecible, legibilidad y foco visible por teclado. */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 body {
   margin: 0;
   background: var(--color-fondo);
@@ -26,37 +28,151 @@ body {
   font-family: 'Jost', Arial, sans-serif;
   line-height: 1.6;
 }
-button, input, select, textarea { font: inherit; }
-:focus-visible { outline: 3px solid var(--color-acento); outline-offset: 4px; }
-::selection { background: var(--color-acento); color: var(--color-fondo); }
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+:focus-visible {
+  outline: 3px solid var(--color-acento);
+  outline-offset: 4px;
+}
+::selection {
+  background: var(--color-acento);
+  color: var(--color-fondo);
+}
 
 /* Controles reutilizables de formularios, acciones y diálogos. */
-.boton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 19px; border: 1px solid transparent; border-radius: var(--radio-control); cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; }
-.primario { color: white; background: var(--color-acento); }
-.primario:hover:not(:disabled) { background: #7f1c23; }
-.secundario { background: white; color: var(--color-texto); border-color: var(--color-borde); }
-.secundario:hover:not(:disabled) { background: var(--color-superficie); }
-.rechazo { color: var(--color-acento); border-color: #dcb9bd; background: white; }
-.compacto { padding: 8px 12px; font-size: 12px; }
-button:disabled { cursor: wait; opacity: .5; }
-.boton-icono, .boton-texto { background: none; border: 0; cursor: pointer; color: inherit; }
-.boton-icono { font-size: 24px; padding: 5px 10px; }
-.boton-texto { text-decoration: underline; font-size: 14px; }
-
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 19px;
+  border: 1px solid transparent;
+  border-radius: var(--radio-control);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.primario {
+  color: white;
+  background: var(--color-acento);
+}
+.primario:hover:not(:disabled) {
+  background: #7f1c23;
+}
+.secundario {
+  background: white;
+  color: var(--color-texto);
+  border-color: var(--color-borde);
+}
+.secundario:hover:not(:disabled) {
+  background: var(--color-superficie);
+}
+.rechazo {
+  color: var(--color-acento);
+  border-color: #dcb9bd;
+  background: white;
+}
+.compacto {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+.boton-icono,
+.boton-texto {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: inherit;
+}
+.boton-icono {
+  font-size: 24px;
+  padding: 5px 10px;
+}
+.boton-texto {
+  text-decoration: underline;
+  font-size: 14px;
+}
 
 /* Diálogos nativos: fondo opaco, foco contenido y formulario legible en móvil. */
-dialog { width: min(500px, calc(100% - 32px)); max-height: calc(100dvh - 40px); padding: 28px; border: 1px solid var(--color-borde); border-radius: 6px; color: var(--color-texto); }
-dialog::backdrop { background: rgb(18 18 18 / 50%); }
-.cabecera-dialogo { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
-.cabecera-dialogo h2 { font-size: 26px; }
-.descripcion-dialogo { font-size: 14px; color: var(--color-texto-secundario); margin: 12px 0 22px; }
-dialog label { display: block; font-size: 13px; font-weight: 500; margin: 16px 0 6px; }
-dialog label small { display: inline; }
-dialog input, dialog textarea { width: 100%; }
-dialog textarea { resize: vertical; }
-dialog small { margin-top: 5px; }
-.vista-previa { background: var(--color-superficie); padding: 14px; margin-top: 20px; font-size: 12px; }
-.vista-previa strong { font-weight: 500; }
-.vista-previa p { margin: 4px 0 0; color: var(--color-texto-secundario); }
-.acciones-dialogo { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
-.solo-lectores { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+dialog {
+  width: min(500px, calc(100% - 32px));
+  max-height: calc(100dvh - 40px);
+  padding: 28px;
+  border: 1px solid var(--color-borde);
+  border-radius: 6px;
+  color: var(--color-texto);
+}
+dialog::backdrop {
+  background: rgb(18 18 18 / 50%);
+}
+.cabecera-dialogo {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+.cabecera-dialogo h2 {
+  font-size: 26px;
+}
+.descripcion-dialogo {
+  font-size: 14px;
+  color: var(--color-texto-secundario);
+  margin: 12px 0 22px;
+}
+dialog label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 16px 0 6px;
+}
+dialog label small {
+  display: inline;
+}
+dialog input,
+dialog textarea {
+  width: 100%;
+}
+dialog textarea {
+  resize: vertical;
+}
+dialog small {
+  margin-top: 5px;
+}
+.vista-previa {
+  background: var(--color-superficie);
+  padding: 14px;
+  margin-top: 20px;
+  font-size: 12px;
+}
+.vista-previa strong {
+  font-weight: 500;
+}
+.vista-previa p {
+  margin: 4px 0 0;
+  color: var(--color-texto-secundario);
+}
+.acciones-dialogo {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

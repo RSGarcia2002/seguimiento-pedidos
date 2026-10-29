@@ -49,31 +49,53 @@ export function crearAplicacion(estaBaseDatosDisponible: () => boolean) {
 
   // Express reconoce los manejadores de errores por sus cuatro parámetros.
   // No se devuelve el detalle interno de las excepciones al cliente.
-  aplicacion.use((error: unknown, _solicitud: express.Request, respuesta: express.Response, _siguiente: express.NextFunction) => {
-    if (error instanceof ErrorNegocio) {
-      respuesta.status(error.estadoHttp).json({ error: { codigo: error.codigo, mensaje: error.message } });
-      return;
-    }
-    // El índice único es quien resuelve carreras entre dos creaciones simultáneas.
-    if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
-      respuesta.status(409).json({ error: { codigo: 'NUMERO_DUPLICADO', mensaje: 'Ya existe un pedido con ese número.' } });
-      return;
-    }
-    if (error && typeof error === 'object' && 'type' in error && error.type === 'entity.too.large') {
-      respuesta.status(413).json({ error: { codigo: 'DATOS_EXCESIVOS', mensaje: 'La solicitud es demasiado grande.' } });
-      return;
-    }
-    if (error instanceof SyntaxError && 'body' in error) {
-      respuesta.status(400).json({
-        error: { codigo: 'JSON_INVALIDO', mensaje: 'El cuerpo debe ser JSON válido.' },
+  aplicacion.use(
+    (
+      error: unknown,
+      _solicitud: express.Request,
+      respuesta: express.Response,
+      _siguiente: express.NextFunction,
+    ) => {
+      if (error instanceof ErrorNegocio) {
+        respuesta
+          .status(error.estadoHttp)
+          .json({ error: { codigo: error.codigo, mensaje: error.message } });
+        return;
+      }
+      // El índice único es quien resuelve carreras entre dos creaciones simultáneas.
+      if (error && typeof error === 'object' && 'code' in error && error.code === 11000) {
+        respuesta
+          .status(409)
+          .json({
+            error: { codigo: 'NUMERO_DUPLICADO', mensaje: 'Ya existe un pedido con ese número.' },
+          });
+        return;
+      }
+      if (
+        error &&
+        typeof error === 'object' &&
+        'type' in error &&
+        error.type === 'entity.too.large'
+      ) {
+        respuesta
+          .status(413)
+          .json({
+            error: { codigo: 'DATOS_EXCESIVOS', mensaje: 'La solicitud es demasiado grande.' },
+          });
+        return;
+      }
+      if (error instanceof SyntaxError && 'body' in error) {
+        respuesta.status(400).json({
+          error: { codigo: 'JSON_INVALIDO', mensaje: 'El cuerpo debe ser JSON válido.' },
+        });
+        return;
+      }
+      console.error('Error no controlado en la API');
+      respuesta.status(500).json({
+        error: { codigo: 'ERROR_INTERNO', mensaje: 'Ocurrió un error interno.' },
       });
-      return;
-    }
-    console.error('Error no controlado en la API');
-    respuesta.status(500).json({
-      error: { codigo: 'ERROR_INTERNO', mensaje: 'Ocurrió un error interno.' },
-    });
-  });
+    },
+  );
 
   return aplicacion;
 }

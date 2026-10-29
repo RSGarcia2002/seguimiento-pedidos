@@ -5,9 +5,5 @@ import { rutas } from './aplicacion.routes';
 
 /** Servicios globales: captura de errores del navegador y navegación Angular. */
 export const configuracionAplicacion: ApplicationConfig = {
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideRouter(rutas),
-    provideHttpClient(),
-  ],
+  providers: [provideBrowserGlobalErrorListeners(), provideRouter(rutas), provideHttpClient()],
 };

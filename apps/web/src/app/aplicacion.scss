@@ -1,36 +1,113 @@
 /* Contenedor compartido: mantiene alineados encabezado, contenido y pie. */
-:host { display: block; }
-.contenedor { width: min(1200px, calc(100% - 80px)); margin-inline: auto; }
-.encabezado { border-bottom: 1px solid var(--color-borde); }
-.barra-principal { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 104px; }
-.identidad { text-decoration: none; color: inherit; display: flex; flex-direction: column; line-height: 1; }
-.marca { font-size: 44px; letter-spacing: -.06em; font-weight: 700; }
-.punto-marca { color: var(--color-acento); }
-.descripcion-marca { font-size: 9px; letter-spacing: .17em; margin-top: 8px; }
-.contexto { display: flex; align-items: center; gap: 22px; font-size: 14px; }
-.etiqueta { border: 1px solid var(--color-borde); border-radius: var(--radio-control); padding: 6px 12px; color: var(--color-texto-secundario); font-size: 12px; }
+.contenedor {
+  width: min(1200px, calc(100% - 80px));
+  margin-inline: auto;
+}
+.encabezado {
+  border-bottom: 1px solid var(--color-borde);
+}
+.barra-principal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 104px;
+}
+.identidad {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+.marca {
+  font-size: 44px;
+  letter-spacing: -0.06em;
+  font-weight: 700;
+}
+.punto-marca {
+  color: var(--color-acento);
+}
+.descripcion-marca {
+  font-size: 9px;
+  letter-spacing: 0.17em;
+  margin-top: 8px;
+}
+.contexto {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  font-size: 14px;
+}
+.etiqueta {
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-control);
+  padding: 6px 12px;
+  color: var(--color-texto-secundario);
+  font-size: 12px;
+}
 
-.pie { background: var(--color-oscuro); color: var(--color-fondo); }
-.contenido-pie { display: flex; justify-content: space-between; gap: 16px; padding-block: 24px; font-size: 12px; }
-.enlace-salto { position: absolute; left: 16px; top: -100px; background: var(--color-fondo); color: var(--color-acento); padding: 12px; z-index: 1; }
-.enlace-salto:focus { top: 12px; }
+.pie {
+  background: var(--color-oscuro);
+  color: var(--color-fondo);
+}
+.contenido-pie {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 24px;
+  font-size: 12px;
+}
+.enlace-salto {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  background: var(--color-fondo);
+  color: var(--color-acento);
+  padding: 12px;
+  z-index: 1;
+}
+.enlace-salto:focus {
+  top: 12px;
+}
 
 /* En tabletas y móviles el flujo se reorganiza sin desplazamiento horizontal. */
 @media (max-width: 760px) {
-  .contenedor { width: calc(100% - 40px); }
-  .barra-principal { min-height: 90px; }
-  .contexto { flex-direction: column; align-items: flex-end; gap: 6px; font-size: 12px; }
-  .marca { font-size: 36px; }
-  .descripcion-marca { font-size: 7px; }
-  .presentacion { padding-block: 44px 36px; }
-  .cabecera-seccion { align-items: flex-start; flex-direction: column; gap: 6px; }
-  .flujo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .flujo li { padding: 18px; }
-  .flujo strong { font-size: 18px; }
-  .contenido-pie { flex-direction: column; gap: 4px; }
+  .contenedor {
+    width: calc(100% - 40px);
+  }
+  .barra-principal {
+    min-height: 90px;
+  }
+  .contexto {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    font-size: 12px;
+  }
+  .marca {
+    font-size: 36px;
+  }
+  .descripcion-marca {
+    font-size: 7px;
+  }
+  .contenido-pie {
+    flex-direction: column;
+    gap: 4px;
+  }
 }
 
 /* El contenido funcional comparte el ancho y mantiene el pie al final de la ventana. */
-:host { min-height: 100dvh; display: flex; flex-direction: column; }
-main { flex: 1; padding-block: 36px 48px; }
-.seccion-activa { border-bottom: 2px solid var(--color-acento); padding-block: 10px; }
+:host {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1;
+  padding-block: 36px 48px;
+}
+.seccion-activa {
+  border-bottom: 2px solid var(--color-acento);
+  padding-block: 10px;
+}

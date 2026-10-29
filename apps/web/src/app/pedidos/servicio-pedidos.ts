@@ -10,18 +10,32 @@ export class ServicioPedidos {
   private readonly http = inject(HttpClient);
 
   listar(busqueda: string, estado: string, pagina: number) {
-    const params = new HttpParams().set('busqueda', busqueda.trim()).set('estado', estado).set('pagina', pagina);
-    return firstValueFrom(this.http.get<ListadoPedidos>('/api/pedidos', { params }).pipe(timeout(15000)));
+    const params = new HttpParams()
+      .set('busqueda', busqueda.trim())
+      .set('estado', estado)
+      .set('pagina', pagina);
+    return firstValueFrom(
+      this.http.get<ListadoPedidos>('/api/pedidos', { params }).pipe(timeout(15000)),
+    );
   }
   consultar(id: string) {
-    return firstValueFrom(this.http.get<Pedido>(`/api/pedidos/${encodeURIComponent(id)}`).pipe(timeout(15000)));
+    return firstValueFrom(
+      this.http.get<Pedido>(`/api/pedidos/${encodeURIComponent(id)}`).pipe(timeout(15000)),
+    );
   }
   crear(datos: NuevoPedido) {
     return firstValueFrom(this.http.post<Pedido>('/api/pedidos', datos).pipe(timeout(15000)));
   }
   cambiarEstado(pedidoId: string, paquete: Paquete, accion: 'avanzar' | 'rechazar', motivo = '') {
-    return firstValueFrom(this.http.post<Pedido>(`/api/pedidos/${pedidoId}/paquetes/${paquete.id}/transiciones`, {
-      accion, estadoActual: paquete.estado, versionActual: paquete.version, motivo,
-    }).pipe(timeout(15000)));
+    return firstValueFrom(
+      this.http
+        .post<Pedido>(`/api/pedidos/${pedidoId}/paquetes/${paquete.id}/transiciones`, {
+          accion,
+          estadoActual: paquete.estado,
+          versionActual: paquete.version,
+          motivo,
+        })
+        .pipe(timeout(15000)),
+    );
   }
 }
