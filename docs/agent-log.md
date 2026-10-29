@@ -48,3 +48,10 @@ locales en Atlas sin sobrescribir registros existentes. Una creación de 250 uni
 por HTTP se confirmó directamente en Atlas con paquetes 100/100/50; se eliminó únicamente
 ese registro temporal de verificación. La aplicación local ya apunta a Atlas.
 Se creó el servicio gratuito Render autorizado; su conexión pública se verificará por separado.
+
+## Corrección detectada en la revisión visual pública
+La funcionalidad HTTP y el flujo E2E funcionaban, pero los botones perdían estilos.
+La optimización de CSS crítico de Angular generaba enlaces media=print que se activaban con un script inline;
+Helmet bloqueaba ese script por la política CSP. El código no relajó la seguridad:
+se desactivó inlineCritical para cargar todo el CSS con un enlace ordinario y se añadió
+una comprobación E2E del color del botón para detectar esta regresión en producción.

@@ -17,7 +17,9 @@ prueba(
     await esperar(
       pagina.getByRole('heading', { name: 'Tus pedidos, en movimiento.' }),
     ).toBeVisible();
-    await pagina.getByRole('button', { name: 'Nuevo pedido' }).click();
+    // El CSS de producción debe cargar sin scripts inline bloqueados por la CSP.
+  await esperar(pagina.getByRole('button', { name: 'Nuevo pedido' })).toHaveCSS('background-color', 'rgb(158, 37, 45)');
+  await pagina.getByRole('button', { name: 'Nuevo pedido' }).click();
     await pagina.getByLabel('Número de pedido').fill(numeroPrueba);
     await pagina.getByLabel('Cliente', { exact: false }).fill('Cliente de prueba de interfaz');
     await pagina.getByLabel('Cantidad de unidades').fill('250');

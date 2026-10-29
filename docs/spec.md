@@ -66,3 +66,9 @@ La pantalla inicial continúa identificándose como versión en desarrollo.
   visible como extra de uso local. No requiere llamadas a proveedores externos de IA.
 - Producción: Express sirve el frontend Angular y /api desde el mismo origen.
   El despliegue público y la conexión Atlas se verificarán antes de declarar la entrega completa.
+
+## Compatibilidad de estilos en producción
+La política de seguridad de Express no permite scripts ni manejadores JavaScript HTML inline.
+El build de Angular debe cargar CSS con enlaces ordinarios, sin activación mediante scripts inline.
+Se desactiva únicamente la extracción de CSS crítico (inlineCritical), manteniendo minificación.
+El flujo E2E debe comprobar que el botón primario conserva fondo vino y espaciado de diseño.
