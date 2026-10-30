@@ -217,3 +217,24 @@ dialog small {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Controles compartidos de edición y eliminación de pedidos. */
+.boton.peligro {
+  background: #9e252d;
+  border-color: #9e252d;
+  color: white;
+}
+.boton.peligro:hover:not(:disabled) {
+  background: #791c24;
+}
+input[readonly] {
+  background: #f3f3f3;
+  color: var(--color-texto-secundario);
+}
+
+.acciones-pedido {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}

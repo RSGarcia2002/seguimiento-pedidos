@@ -43,3 +43,7 @@ Se ofrece también en la primera visita y puede omitirse. Dura 12 pasos cuando e
 pedidos; utiliza un pedido abierto cuando está disponible, sin ejecutar cambios.
 Los pasos de detalle se omiten si la base está vacía. Permite usar Anterior, Siguiente,
 Finalizar o Escape y repetirlo después.
+
+## CRUD completo
+
+Desde el detalle se puede editar número y cliente, y cambiar cantidad antes del primer movimiento. Eliminar exige escribir el número exacto y borra definitivamente paquetes e historial. Editar y eliminar utilizan versión del pedido para detectar cambios concurrentes. Demostrarlo únicamente con un pedido creado para la presentación.

@@ -127,3 +127,20 @@ paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.
   todas las imágenes sin errores y no hubo desbordamiento a 390 ni 320 píxeles.
   Revisadas portada, arquitectura, móvil y estilos de impresión.
 - Cambio documental: no requiere desplegar otra versión de la aplicación.
+
+### CRUD completo de pedidos — 29/10/2026
+
+- Especificación y contrato definidos antes de implementar PUT y DELETE de pedidos.
+- Edición de número y cliente; cambio de cantidad solo antes del primer movimiento,
+  con regeneración atómica de paquetes pendientes y conservación de historial al
+  corregir únicamente datos comerciales.
+- Eliminación física confirmada mediante número exacto, con aviso sobre pérdida de
+  paquetes e historial y actualización posterior de estadísticas.
+- versionPedido protege edición y eliminación frente a movimientos y cambios concurrentes.
+  Los documentos anteriores sin este campo se interpretan como versión cero.
+- 50 verificaciones backend, prueba Angular y tres recorridos E2E aprobados.
+  Se probaron carreras edición/edición, cantidad/transición y edición/eliminación
+  únicamente en bases aisladas, además de duplicados, legado y estadísticas tras borrar.
+- La prueba de interfaz detectó que se perdía el aviso tras navegar; se corrigió con
+  un servicio de avisos de un solo consumo. Compilación final sin avisos de presupuesto.
+- Manual HTML, README y recorrido guiado actualizados con las operaciones del CRUD.

@@ -52,6 +52,25 @@ export class ServicioPedidos {
   crear(datos: NuevoPedido) {
     return firstValueFrom(this.http.post<Pedido>('/api/pedidos', datos).pipe(timeout(15000)));
   }
+  editar(pedido: Pedido, datos: NuevoPedido) {
+    return firstValueFrom(
+      this.http
+        .put<Pedido>(`/api/pedidos/${pedido.id}`, {
+          ...datos,
+          versionPedidoActual: pedido.versionPedido,
+        })
+        .pipe(timeout(15000)),
+    );
+  }
+  eliminar(pedido: Pedido, numeroConfirmacion: string) {
+    return firstValueFrom(
+      this.http
+        .delete<void>(`/api/pedidos/${pedido.id}`, {
+          body: { numeroConfirmacion, versionPedidoActual: pedido.versionPedido },
+        })
+        .pipe(timeout(15000)),
+    );
+  }
   cambiarEstado(pedidoId: string, paquete: Paquete, accion: 'avanzar' | 'rechazar', motivo = '') {
     return firstValueFrom(
       this.http

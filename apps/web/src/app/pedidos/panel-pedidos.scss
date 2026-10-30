@@ -534,3 +534,14 @@ h3 span {
     padding-inline: 12px;
   }
 }
+
+/* Las acciones del CRUD se agrupan y se reorganizan sin ensanchar la vista móvil. */
+@media (max-width: 760px) {
+  .acciones-pedido {
+    justify-content: flex-start;
+  }
+  .acciones-pedido .boton {
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+}

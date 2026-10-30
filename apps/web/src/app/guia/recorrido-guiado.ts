@@ -124,7 +124,7 @@ export class RecorridoGuiado implements AfterViewInit {
         {
           titulo: 'El avance de un pedido',
           texto:
-            'Este es un pedido existente, abierto solo para mostrarte la pantalla. El porcentaje se calcula con las unidades listas respecto al total; las unidades en producción o revisión todavía no suman al avance.',
+            'El avance se calcula por unidades listas. «Editar pedido» permite corregir número y cliente; la cantidad solo cambia antes de iniciar producción. «Eliminar pedido» borra también paquetes e historial y exige confirmar el número. La guía no ejecuta estas acciones.',
           ruta: `/pedidos/${idPedido}`,
           selector: '.resumen-detalle',
         },

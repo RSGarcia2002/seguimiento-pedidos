@@ -127,3 +127,23 @@ resúmenes ni abre acciones de escritura automáticamente. Los fallos de carga n
 el cierre. El diálogo conserva el foco, admite teclado y se adapta a móviles.
 
 No se modifica el contrato HTTP: la guía reutiliza únicamente consultas GET existentes.
+
+## CRUD completo de pedidos
+
+- C: POST existente; R: listado y detalle existentes.
+- U: PUT /api/pedidos/:id recibe numero, cliente, cantidad y versionPedidoActual.
+  Reutiliza normalización, unicidad y límites de creación. Número y cliente pueden
+  corregirse en cualquier estado. La cantidad solo cambia si todos los paquetes siguen
+  pendientes, sin historial y con versión cero; en ese caso se regeneran atómicamente.
+  Si la cantidad no cambia, se conservan identificadores e historial de paquetes.
+- D: DELETE /api/pedidos/:id recibe numeroConfirmacion exacto y versionPedidoActual.
+  Elimina definitivamente pedido, paquetes e historial. La interfaz informa el efecto
+  en estadísticas y exige escribir el número del pedido antes de confirmar.
+- Cada edición y transición incrementa versionPedido. Documentos anteriores sin ese
+  campo se interpretan como versión cero. Editar y eliminar comparan la versión en la
+  misma operación atómica para evitar sobrescribir cambios concurrentes.
+- HTTP 400 para entradas inválidas o confirmación incorrecta, 404 si no existe y 409
+  para duplicado, cantidad bloqueada o versión obsoleta; DELETE correcto devuelve 204.
+- La interfaz ofrece Editar y Eliminar en detalle, mensajes de resultado y tratamiento
+  de conflictos. Se actualizan listado y estadísticas en su siguiente consulta.
+- Las pruebas destructivas usan únicamente registros y bases de pruebas propios.

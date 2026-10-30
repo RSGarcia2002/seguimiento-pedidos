@@ -16,6 +16,7 @@ export interface Paquete {
   historial: EventoPaquete[];
 }
 export interface ResumenPedido {
+  versionPedido: number;
   origenDatos?: 'manual' | 'sintetico';
   id: string;
   numero: string;

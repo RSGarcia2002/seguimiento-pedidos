@@ -3,7 +3,7 @@
   <img src="docs/diagramas/portada-manual.svg" alt="TATA · Seguimiento de pedidos. Manual técnico y de usuario, edición 1.0." width="100%">
   <h1>Manual técnico y de usuario</h1>
   <p><strong>Sistema web de seguimiento de pedidos y control de producción</strong></p>
-  <p>Registro · Paquetes · Trazabilidad · Estadísticas · Seguimiento operativo</p>
+  <p>CRUD de pedidos · Paquetes · Trazabilidad · Estadísticas · Seguimiento operativo</p>
   <p><a href="https://seguimiento-pedidos-tata.onrender.com/">Abrir aplicación</a> · <a href="#manual-usuario">Manual de usuario</a> · <a href="#manual-tecnico">Manual técnico</a> · <a href="docs/manual/index.html">Edición HTML para abrir e imprimir</a></p>
 </div>
 
@@ -53,7 +53,7 @@
 </ul>
 <table>
   <tr><th>Incluido en la entrega</th><th>Fuera del alcance actual</th></tr>
-  <tr><td>Pedidos, paquetes, historial, filtros, CSV, estadísticas, alertas, resumen por reglas y guía interactiva.</td><td>Inicio de sesión, roles, separación por empresa, edición o eliminación de pedidos, inventario, facturación y notificaciones.</td></tr>
+  <tr><td>CRUD de pedidos (crear, consultar, editar y eliminar), paquetes, historial, filtros, CSV, estadísticas, alertas, resumen por reglas y guía interactiva.</td><td>Inicio de sesión, roles, separación por empresa, inventario, facturación y notificaciones.</td></tr>
   <tr><td>Integración opcional de consulta con Gemini y alternativa automática por reglas.</td><td>Activación generativa sin clave, modificación autónoma de pedidos y predicciones de entrega.</td></tr>
 </table>
 
@@ -99,6 +99,16 @@
 </table>
 <p>El listado muestra 12 pedidos por página de forma predeterminada. Los indicadores superiores representan la operación completa; no se reducen al aplicar filtros. <strong>Exportar página CSV</strong> descarga únicamente las filas de la página visible.</p>
 <p align="center"><img src="docs/capturas/manual-pedidos.png" alt="Listado actual con indicadores, filtros por cliente y fechas y tabla de pedidos" width="100%"><br><em>Figura 2. Panel de pedidos y controles de consulta.</em></p>
+
+<h3>3.3 Editar y eliminar: CRUD completo</h3>
+<table>
+  <tr><th>Operación</th><th>Procedimiento</th><th>Regla de conservación</th></tr>
+  <tr><td>Editar pedido</td><td>Abra el detalle, pulse <strong>Editar pedido</strong>, corrija los datos y guarde los cambios.</td><td>Puede corregir número y cliente en cualquier estado. La cantidad solo se cambia antes del primer movimiento; al hacerlo se regeneran los paquetes pendientes.</td></tr>
+  <tr><td>Conservar producción</td><td>Si la producción ya inició, la cantidad aparece bloqueada.</td><td>Al corregir número o cliente se conservan identificadores, estados e historial de todos los paquetes.</td></tr>
+  <tr><td>Eliminar pedido</td><td>Pulse <strong>Eliminar pedido</strong>, lea el aviso, escriba el número exacto y confirme <strong>Eliminar definitivamente</strong>.</td><td>Se eliminan pedido, paquetes e historial; sus aportes desaparecen de las estadísticas en la siguiente consulta. La acción no se puede deshacer.</td></tr>
+  <tr><td>Resolver conflicto</td><td>Si otro usuario modificó el pedido, revise los datos actuales antes de repetir.</td><td>La versión del documento impide sobrescribir o eliminar cambios nuevos. El formulario ofrece recargar los datos actuales.</td></tr>
+</table>
+<p>Cancelar o cerrar los diálogos no modifica datos. Una eliminación correcta regresa al listado y muestra el resultado.</p>
 
 <h2 id="produccion">04 · Producción por paquetes e historial</h2>
 <p>Abra <strong>Ver detalle</strong> en una fila. La cabecera presenta cliente, cantidad, paquetes y avance; debajo aparecen las tarjetas individuales.</p>
@@ -209,7 +219,7 @@
 <ul>
   <li><strong>Separación de responsabilidades:</strong> reglas de negocio independientes de rutas y presentación.</li>
   <li><strong>Máquina de estados:</strong> transiciones explícitas para impedir saltos de producción.</li>
-  <li><strong>Concurrencia optimista:</strong> comparación de estado y versión dentro de una escritura atómica.</li>
+  <li><strong>Concurrencia optimista:</strong> comparación del estado y versión del paquete en transiciones, y de la versión del pedido al editar o eliminar.</li>
   <li><strong>Valores derivados:</strong> avance y estado del pedido calculados desde sus paquetes.</li>
   <li><strong>Documentos embebidos:</strong> pedido, paquetes e historial se consultan y actualizan conjuntamente.</li>
   <li><strong>Datos reproducibles:</strong> generación determinista, lote identificado y carga idempotente.</li>
@@ -219,10 +229,11 @@
 <h2 id="datos">09 · Modelo de datos y reglas de negocio</h2>
 <table>
   <tr><th>Entidad</th><th>Campos principales</th><th>Reglas</th></tr>
-  <tr><td>Pedido</td><td><code>numero</code>, <code>cliente</code>, <code>cantidad</code>, <code>paquetes</code>, fechas y procedencia.</td><td>Número único normalizado; cantidad entera de 1 a 100 000.</td></tr>
+  <tr><td>Pedido</td><td><code>numero</code>, <code>cliente</code>, <code>cantidad</code>, <code>versionPedido</code>, <code>paquetes</code>, fechas y procedencia.</td><td>Número único normalizado; cantidad entera de 1 a 100 000.</td></tr>
   <tr><td>Paquete embebido</td><td><code>numero</code>, <code>unidades</code>, <code>estado</code>, <code>version</code>, <code>historial</code>.</td><td>De 1 a 100 unidades; estado inicial pendiente; versión incrementada por transición.</td></tr>
   <tr><td>Evento embebido</td><td><code>fecha</code>, <code>origen</code>, <code>destino</code>, <code>motivo</code>.</td><td>Se guarda junto con el cambio de estado. Motivo de hasta 300 caracteres.</td></tr>
 </table>
+<p>Cada edición y transición incrementa <code>versionPedido</code>. Los documentos anteriores sin ese campo se leen como versión cero. Editar y eliminar requieren <code>versionPedidoActual</code>; el servidor compara la versión en la misma operación de escritura.</p>
 <p>El índice único de <code>numero</code> resuelve también creaciones simultáneas. Existen índices por fecha de creación y fecha del historial. Las fechas se almacenan como instantes; filtros e indicadores aplican el calendario de Guatemala.</p>
 <pre><code>paquetes completos = parte entera de (cantidad / 100)
 remanente          = cantidad % 100
@@ -297,6 +308,8 @@ npm start</code></pre>
   <tr><td>GET</td><td><code>/api/pedidos</code></td><td>Listado, filtros, paginación y resumen global.</td></tr>
   <tr><td>POST</td><td><code>/api/pedidos</code></td><td>Crear pedido y paquetes.</td></tr>
   <tr><td>GET</td><td><code>/api/pedidos/:id</code></td><td>Detalle y movimientos.</td></tr>
+  <tr><td>PUT</td><td><code>/api/pedidos/:id</code></td><td>Editar numero, cliente y cantidad con versionPedidoActual.</td></tr>
+  <tr><td>DELETE</td><td><code>/api/pedidos/:id</code></td><td>Eliminar con numeroConfirmacion y versionPedidoActual; devuelve 204.</td></tr>
   <tr><td>POST</td><td><code>/api/pedidos/:id/paquetes/:paqueteId/transiciones</code></td><td>Avanzar o rechazar con estado y versión esperados.</td></tr>
   <tr><td>GET</td><td><code>/api/estadisticas?dias=30</code></td><td>Cartera, actividad, clientes y calidad.</td></tr>
   <tr><td>GET</td><td><code>/api/operacion/alertas?tipo=todos</code></td><td>Alertas calculadas y umbrales.</td></tr>
@@ -317,10 +330,10 @@ npm start</code></pre>
 <p>Los identificadores se obtienen del detalle. Use la versión y el estado vigentes; no reutilice los valores del ejemplo después de una transición.</p>
 <table>
   <tr><th>HTTP</th><th>Significado</th></tr>
-  <tr><td>200 / 201</td><td>Consulta o cambio correcto / creación de pedido.</td></tr>
+  <tr><td>200 / 201 / 204</td><td>Consulta o edición correcta / creación / eliminación sin cuerpo de respuesta.</td></tr>
   <tr><td>400</td><td>Entrada, fecha, filtro o transición no válidos.</td></tr>
   <tr><td>404</td><td>Pedido, paquete o ruta inexistentes.</td></tr>
-  <tr><td>409</td><td>Número duplicado o conflicto de estado y versión.</td></tr>
+  <tr><td>409</td><td>Número duplicado, cantidad bloqueada o conflicto de estado y versión.</td></tr>
   <tr><td>413</td><td>El JSON recibido excede el límite configurado.</td></tr>
   <tr><td>500 / 503</td><td>Error interno / salud degradada por desconexión de MongoDB.</td></tr>
 </table>
@@ -342,10 +355,10 @@ PLAYWRIGHT_CHANNEL=chrome npm run test:e2e</code></pre>
   <tr><td>Dominio y cálculos</td><td>Partición, límites, avance, transiciones, datos sintéticos, métricas y umbrales.</td><td>Funciones sin escrituras externas.</td></tr>
   <tr><td>Integración HTTP + MongoDB</td><td>Creación, índices, persistencia, concurrencia, filtros, alertas y resumen.</td><td>Base aleatoria propia por ejecución; se elimina al terminar.</td></tr>
   <tr><td>Interfaz Angular</td><td>Identidad y estructura básica de la aplicación.</td><td>Entorno de pruebas Vitest.</td></tr>
-  <tr><td>Navegador E2E</td><td>Flujo de pedido, rechazo, 20 % de avance, CSV, estadísticas y recorrido guiado.</td><td>API en 3100 y base <code>seguimiento_e2e</code>; elimina sus registros.</td></tr>
+  <tr><td>Navegador E2E</td><td>CRUD de pedidos, rechazo, 20 % de avance, CSV, estadísticas y recorrido guiado.</td><td>API en 3100 y base <code>seguimiento_e2e</code>; elimina sus registros.</td></tr>
   <tr><td>Proveedor simulado</td><td>Respuesta válida, caché, cuota, error, timeout, referencias y límite diario.</td><td>Postman local, sin claves reales ni llamadas a Google.</td></tr>
 </table>
-<p><strong>Última evidencia registrada:</strong> compilación aprobada, 41 comprobaciones backend, una prueba Angular, dos recorridos E2E y seis pruebas de integración simulada. Estos resultados describen las ejecuciones documentadas, no una medición de cobertura porcentual.</p>
+<p><strong>Última evidencia registrada:</strong> compilación aprobada, 50 comprobaciones backend, una prueba Angular, tres recorridos E2E y seis pruebas de integración simulada. Estos resultados describen las ejecuciones documentadas, no una medición de cobertura porcentual.</p>
 <p>La integración usa <code>TEST_MONGODB_URI</code> para elegir otro servidor de pruebas. La configuración E2E fija su conexión local. La simulación opcional se reproduce con los comandos de <a href="docs/operacion.md">docs/operacion.md</a>.</p>
 <h3>12.2 Matriz de trazabilidad resumida</h3>
 <table>
@@ -354,6 +367,7 @@ PLAYWRIGHT_CHANNEL=chrome npm run test:e2e</code></pre>
   <tr><td>Unicidad y concurrencia</td><td>Índice único, estado y versión esperados.</td><td><code>apps/api/test/integracion.test.ts</code></td></tr>
   <tr><td>Estadísticas coherentes</td><td><code>src/estadisticas/calculo.ts</code></td><td><code>apps/api/test/estadisticas.test.ts</code></td></tr>
   <tr><td>Alertas y alternativa gratuita</td><td><code>src/operacion/</code></td><td><code>alertas.test.ts</code> y <code>ia.simulacion.ts</code></td></tr>
+  <tr><td>CRUD y concurrencia del documento</td><td>PUT y DELETE atómicos; cantidad protegida e historial conservado.</td><td><code>apps/api/test/crud.test.ts</code> y <code>pruebas/interfaz/crud.spec.ts</code></td></tr>
   <tr><td>Operación desde navegador</td><td>Panel de pedidos y secciones de análisis.</td><td><code>pruebas/interfaz/pedidos.spec.ts</code></td></tr>
   <tr><td>Guía sin cambios de datos</td><td><code>apps/web/src/app/guia/</code></td><td><code>pruebas/interfaz/guia.spec.ts</code></td></tr>
 </table>

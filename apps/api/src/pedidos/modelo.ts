@@ -24,6 +24,7 @@ const esquemaPedido = new Schema(
     cliente: { type: String, required: true, maxlength: 120 },
     cantidad: { type: Number, required: true, min: 1, max: 100000 },
     paquetes: { type: [esquemaPaquete], required: true },
+    versionPedido: { type: Number, default: 0, min: 0, required: true },
     // Identifica datos de muestra sin modificar el comportamiento de pedidos manuales.
     origenDatos: { type: String, enum: ['manual', 'sintetico'], default: 'manual' },
     loteDatos: { type: String, maxlength: 80 },
@@ -48,6 +49,7 @@ export interface DatosPedido {
   cantidad: number;
   fechaCreacion: Date;
   fechaActualizacion: Date;
+  versionPedido?: number;
   origenDatos?: 'manual' | 'sintetico';
   paquetes: {
     _id: { toString(): string };
@@ -68,6 +70,7 @@ export interface DatosPedido {
 export function presentarPedido(pedido: DatosPedido, incluirPaquetes = true) {
   const resumen = {
     id: pedido._id.toString(),
+    versionPedido: pedido.versionPedido ?? 0,
     numero: pedido.numero,
     cliente: pedido.cliente,
     cantidad: pedido.cantidad,

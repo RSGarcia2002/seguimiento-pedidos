@@ -1,3 +1,4 @@
+import { ServicioAvisos } from '../servicio-avisos';
 import {
   Component,
   ElementRef,
@@ -31,6 +32,7 @@ import {
 })
 export class PanelPedidos implements OnInit {
   private readonly servicio = inject(ServicioPedidos);
+  private readonly avisosNavegacion = inject(ServicioAvisos);
   private readonly ruta = inject(ActivatedRoute);
   private readonly navegador = inject(Router);
   private readonly destruccion = inject(DestroyRef);
@@ -38,6 +40,13 @@ export class PanelPedidos implements OnInit {
   private consultaDetalle = 0;
   @ViewChild('dialogoPedido') dialogoPedido!: ElementRef<HTMLDialogElement>;
   @ViewChild('dialogoRechazo') dialogoRechazo!: ElementRef<HTMLDialogElement>;
+  @ViewChild('dialogoEliminar') dialogoEliminar!: ElementRef<HTMLDialogElement>;
+  readonly eliminando = signal(false);
+  readonly errorEliminar = signal('');
+  readonly conflictoEdicion = signal(false);
+  pedidoEnEdicion: Pedido | null = null;
+  pedidoPorEliminar: Pedido | null = null;
+  confirmacionEliminar = '';
   readonly etiquetas = etiquetasEstado;
   readonly estados = ['pendiente', 'en_proceso', 'revision', 'listo'] as const;
   readonly listado = signal<ListadoPedidos | null>(null);
@@ -50,7 +59,7 @@ export class PanelPedidos implements OnInit {
   readonly error = signal('');
   readonly errorFormulario = signal('');
   readonly errorRechazo = signal('');
-  readonly aviso = signal('');
+  readonly aviso = signal(this.avisosNavegacion.consumir());
   readonly filtroEstado = signal('todos');
   readonly filtroPaquetes = signal('todos');
   readonly paquetesVisibles = computed(
@@ -144,11 +153,77 @@ export class PanelPedidos implements OnInit {
   }
 
   abrirFormulario(formulario: NgForm) {
+    this.pedidoEnEdicion = null;
+    this.conflictoEdicion.set(false);
     formulario.resetForm({ numero: '', cliente: '', cantidad: null });
     this.nuevoPedido = { numero: '', cliente: '', cantidad: null };
     this.errorFormulario.set('');
     this.dialogoPedido.nativeElement.showModal();
   }
+  /** Guarda una instantánea para no sobrescribir cambios ocurridos mientras el formulario está abierto. */
+  abrirEdicion(formulario: NgForm) {
+    const pedido = this.pedido();
+    if (!pedido || this.paqueteOcupado()) return;
+    this.pedidoEnEdicion = pedido;
+    this.nuevoPedido = {
+      numero: pedido.numero,
+      cliente: pedido.cliente,
+      cantidad: pedido.cantidad,
+    };
+    formulario.resetForm(this.nuevoPedido);
+    this.errorFormulario.set('');
+    this.conflictoEdicion.set(false);
+    if (!this.dialogoPedido.nativeElement.open) this.dialogoPedido.nativeElement.showModal();
+  }
+  get cantidadEditable() {
+    return (
+      !this.pedidoEnEdicion ||
+      this.pedidoEnEdicion.paquetes.every(
+        (paquete) =>
+          paquete.estado === 'pendiente' && paquete.version === 0 && paquete.historial.length === 0,
+      )
+    );
+  }
+  abrirEliminacion() {
+    const pedido = this.pedido();
+    if (!pedido || this.paqueteOcupado()) return;
+    this.pedidoPorEliminar = pedido;
+    this.confirmacionEliminar = '';
+    this.errorEliminar.set('');
+    this.dialogoEliminar.nativeElement.showModal();
+  }
+  cerrarEliminacion() {
+    if (!this.eliminando()) this.dialogoEliminar.nativeElement.close();
+  }
+  async eliminarPedido() {
+    const pedido = this.pedidoPorEliminar;
+    if (!pedido || this.eliminando() || this.confirmacionEliminar.trim() !== pedido.numero) return;
+    this.eliminando.set(true);
+    this.errorEliminar.set('');
+    try {
+      await this.servicio.eliminar(pedido, this.confirmacionEliminar.trim());
+      this.dialogoEliminar.nativeElement.close();
+      this.pedidoPorEliminar = null;
+      this.aviso.set(`Pedido ${pedido.numero} eliminado.`);
+      this.avisosNavegacion.publicar(this.aviso());
+      // Reinicia la consulta para evitar quedar en una página que ya no existe.
+      this.limpiarFiltros();
+      this.pedido.set(null);
+      await this.navegador.navigate(['/']);
+    } catch (error) {
+      this.errorEliminar.set(this.mensajeError(error));
+      if (error instanceof HttpErrorResponse && error.status === 409) {
+        // La confirmación antigua no se reutiliza: el usuario debe revisar y abrir de nuevo.
+        await this.cargarDetalle();
+        this.errorEliminar.set(
+          'El pedido cambió. Cancela y revisa los datos actuales antes de volver a eliminar.',
+        );
+      }
+    } finally {
+      this.eliminando.set(false);
+    }
+  }
+
   cerrarFormulario() {
     if (!this.guardando()) this.dialogoPedido.nativeElement.close();
   }
@@ -178,12 +253,33 @@ export class PanelPedidos implements OnInit {
     this.guardando.set(true);
     this.errorFormulario.set('');
     try {
-      const pedido = await this.servicio.crear(this.nuevoPedido);
+      const editado = this.pedidoEnEdicion;
+      const pedido = editado
+        ? await this.servicio.editar(editado, this.nuevoPedido)
+        : await this.servicio.crear(this.nuevoPedido);
       this.dialogoPedido.nativeElement.close();
-      this.aviso.set(`Pedido ${pedido.numero} creado con ${pedido.totalPaquetes} paquetes.`);
+      this.aviso.set(
+        editado
+          ? `Pedido ${pedido.numero} actualizado.`
+          : `Pedido ${pedido.numero} creado con ${pedido.totalPaquetes} paquetes.`,
+      );
+      if (editado) {
+        this.pedido.set(pedido);
+        void this.cargarListado();
+      }
+      if (!editado) this.avisosNavegacion.publicar(this.aviso());
       await this.navegador.navigate(['/pedidos', pedido.id]);
     } catch (error) {
       this.errorFormulario.set(this.mensajeError(error));
+      if (
+        this.pedidoEnEdicion &&
+        error instanceof HttpErrorResponse &&
+        error.status === 409 &&
+        error.error?.error?.codigo !== 'NUMERO_DUPLICADO'
+      ) {
+        this.conflictoEdicion.set(true);
+        await this.cargarDetalle();
+      }
     } finally {
       this.guardando.set(false);
     }

@@ -272,14 +272,32 @@
             {{ detalle.fechaCreacion | date: 'dd/MM/yyyy, HH:mm' }}
           </p>
         </div>
-        <button
-          type="button"
-          class="boton secundario"
-          [disabled]="!!paqueteOcupado()"
-          (click)="cargarDetalle()"
-        >
-          ↻ Actualizar
-        </button>
+        <div class="acciones-pedido" aria-label="Acciones del pedido">
+          <button
+            type="button"
+            class="boton secundario"
+            [disabled]="!!paqueteOcupado()"
+            (click)="cargarDetalle()"
+          >
+            ↻ Actualizar
+          </button>
+          <button
+            type="button"
+            class="boton secundario"
+            [disabled]="!!paqueteOcupado()"
+            (click)="abrirEdicion(formularioPedido)"
+          >
+            Editar pedido
+          </button>
+          <button
+            type="button"
+            class="boton peligro"
+            [disabled]="!!paqueteOcupado()"
+            (click)="abrirEliminacion()"
+          >
+            Eliminar pedido
+          </button>
+        </div>
       </div>
       <div class="resumen-detalle">
         <div>
@@ -395,8 +413,8 @@
   <form #formularioPedido="ngForm" (ngSubmit)="guardarPedido(formularioPedido)">
     <div class="cabecera-dialogo">
       <div>
-        <p class="antetitulo">NUEVO REGISTRO</p>
-        <h2 id="titulo-nuevo">Crear pedido</h2>
+        <p class="antetitulo">{{ pedidoEnEdicion ? 'ACTUALIZAR REGISTRO' : 'NUEVO REGISTRO' }}</p>
+        <h2 id="titulo-nuevo">{{ pedidoEnEdicion ? 'Editar pedido' : 'Crear pedido' }}</h2>
       </div>
       <button
         type="button"
@@ -409,10 +427,24 @@
       </button>
     </div>
     <p class="descripcion-dialogo">
-      Indica los datos del pedido. Los paquetes se generan automáticamente.
+      {{
+        pedidoEnEdicion
+          ? 'Corrige los datos del pedido. La cantidad solo se puede cambiar antes del primer movimiento de producción.'
+          : 'Indica los datos del pedido. Los paquetes se generan automáticamente.'
+      }}
     </p>
     @if (errorFormulario()) {
       <p class="aviso-error" role="alert">{{ errorFormulario() }}</p>
+    }
+    @if (conflictoEdicion()) {
+      <button
+        type="button"
+        class="boton secundario"
+        [disabled]="guardando()"
+        (click)="abrirEdicion(formularioPedido)"
+      >
+        Recargar datos actuales
+      </button>
     }
     <label for="numero">Número de pedido <span aria-hidden="true">*</span></label
     ><input
@@ -447,8 +479,13 @@
       step="1"
       placeholder="Ej. 250"
       aria-describedby="ayuda-cantidad"
+      [readonly]="!cantidadEditable"
       [disabled]="guardando()"
-    /><small id="ayuda-cantidad">Un número entero entre 1 y 100 000.</small>
+    /><small id="ayuda-cantidad">{{
+      cantidadEditable
+        ? 'Un número entero entre 1 y 100 000. Al cambiar la cantidad se recalculan los paquetes pendientes.'
+        : 'Cantidad bloqueada: la producción ya inició. Se conservan los paquetes y su historial.'
+    }}</small>
     <div class="vista-previa" aria-live="polite">
       <strong>Distribución de paquetes</strong>
       <p>{{ vistaPrevia || 'Ingresa la cantidad para ver cómo se dividirá el pedido.' }}</p>
@@ -462,7 +499,7 @@
       >
         Cancelar</button
       ><button type="submit" class="boton primario" [disabled]="guardando()">
-        {{ guardando() ? 'Creando…' : 'Crear pedido' }}
+        {{ guardando() ? 'Guardando…' : pedidoEnEdicion ? 'Guardar cambios' : 'Crear pedido' }}
       </button>
     </div>
   </form>
@@ -512,6 +549,69 @@
         Cancelar</button
       ><button type="submit" class="boton primario" [disabled]="!!paqueteOcupado()">
         {{ paqueteOcupado() ? 'Guardando…' : 'Confirmar rechazo' }}
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<!-- La eliminación exige confirmar el número y presenta su alcance antes de enviar DELETE. -->
+<dialog
+  #dialogoEliminar
+  aria-labelledby="titulo-eliminar"
+  (cancel)="eliminando() && $event.preventDefault()"
+>
+  <form (ngSubmit)="eliminarPedido()">
+    <div class="cabecera-dialogo">
+      <div>
+        <p class="antetitulo">ELIMINACIÓN DEFINITIVA</p>
+        <h2 id="titulo-eliminar">Eliminar pedido</h2>
+      </div>
+      <button
+        type="button"
+        class="boton-icono"
+        aria-label="Cerrar eliminación"
+        [disabled]="eliminando()"
+        (click)="cerrarEliminacion()"
+      >
+        ×
+      </button>
+    </div>
+    <p>
+      Se eliminará <strong>{{ pedidoPorEliminar?.numero }}</strong> de
+      <strong>{{ pedidoPorEliminar?.cliente }}</strong
+      >, incluidos sus paquetes e historial. Los indicadores y las estadísticas se recalcularán al
+      consultar. Esta acción no se puede deshacer.
+    </p>
+    @if (errorEliminar()) {
+      <p class="aviso-error" role="alert">{{ errorEliminar() }}</p>
+    }
+    <label for="confirmacion-eliminar"
+      >Escribe {{ pedidoPorEliminar?.numero }} para confirmar</label
+    >
+    <input
+      id="confirmacion-eliminar"
+      name="confirmacionEliminar"
+      [(ngModel)]="confirmacionEliminar"
+      maxlength="50"
+      required
+      autocomplete="off"
+      [disabled]="eliminando()"
+    />
+    <div class="acciones-dialogo">
+      <button
+        type="button"
+        class="boton secundario"
+        [disabled]="eliminando()"
+        (click)="cerrarEliminacion()"
+      >
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        class="boton peligro"
+        [disabled]="eliminando() || confirmacionEliminar.trim() !== pedidoPorEliminar?.numero"
+      >
+        {{ eliminando() ? 'Eliminando…' : 'Eliminar definitivamente' }}
       </button>
     </div>
   </form>

@@ -313,6 +313,89 @@
             }
           }
         }
+      },
+      "put": {
+        "operationId": "editarPedido",
+        "summary": "Editar datos del pedido; cantidad modificable solo antes de producción",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditarPedido"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pedido actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pedido"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos o confirmación no válidos"
+          },
+          "404": {
+            "description": "Pedido inexistente"
+          },
+          "409": {
+            "description": "Conflicto de versión, duplicado o cantidad bloqueada"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "eliminarPedido",
+        "summary": "Eliminar definitivamente el pedido con confirmación explícita",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EliminarPedido"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Pedido eliminado; sin cuerpo"
+          },
+          "400": {
+            "description": "Datos o confirmación no válidos"
+          },
+          "404": {
+            "description": "Pedido inexistente"
+          },
+          "409": {
+            "description": "Conflicto de versión, duplicado o cantidad bloqueada"
+          }
+        }
       }
     },
     "/api/pedidos/{id}/paquetes/{paqueteId}/transiciones": {
@@ -628,7 +711,8 @@
           "unidadesListas",
           "avance",
           "conteos",
-          "estado"
+          "estado",
+          "versionPedido"
         ],
         "properties": {
           "id": {
@@ -686,6 +770,10 @@
             "type": "string",
             "enum": ["manual", "sintetico"],
             "description": "Procedencia del pedido; los datos generados son ficticios."
+          },
+          "versionPedido": {
+            "type": "integer",
+            "minimum": 0
           }
         }
       },
@@ -1137,6 +1225,46 @@
                 "minimum": 0
               }
             }
+          }
+        }
+      },
+      "EditarPedido": {
+        "type": "object",
+        "required": ["numero", "cliente", "cantidad", "versionPedidoActual"],
+        "properties": {
+          "numero": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "cliente": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "cantidad": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "versionPedidoActual": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "EliminarPedido": {
+        "type": "object",
+        "required": ["numeroConfirmacion", "versionPedidoActual"],
+        "properties": {
+          "numeroConfirmacion": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "versionPedidoActual": {
+            "type": "integer",
+            "minimum": 0
           }
         }
       }

@@ -1,3 +1,4 @@
+import { validarVersionPedido, filtroVersionPedido, conflictoPedido } from './edicion.js';
 import { Router } from 'express';
 import { isObjectIdOrHexString, type QueryFilter, type PipelineStage } from 'mongoose';
 import { ErrorNegocio, validarNuevoPedido, validarTransicion } from '../dominio/pedidos.js';
@@ -204,6 +205,83 @@ rutasPedidos.get('/:id', async (solicitud, respuesta) => {
   respuesta.json(presentarPedido(pedido));
 });
 
+/** Edita únicamente campos comerciales; los paquetes solo se regeneran antes del primer movimiento. */
+rutasPedidos.put('/:id', async (solicitud, respuesta) => {
+  const id = validarId(solicitud.params['id']);
+  const version = validarVersionPedido(solicitud.body);
+  const datos = validarNuevoPedido(solicitud.body);
+  const actual = await ModeloPedido.findById(id);
+  if (!actual) throw new ErrorNegocio(404, 'PEDIDO_NO_ENCONTRADO', 'No se encontró el pedido.');
+  if ((actual.versionPedido ?? 0) !== version) conflictoPedido();
+  const cambiaCantidad = datos.cantidad !== actual.cantidad;
+  if (
+    cambiaCantidad &&
+    actual.paquetes.some(
+      (paquete) =>
+        paquete.estado !== 'pendiente' || paquete.version !== 0 || paquete.historial.length > 0,
+    )
+  )
+    throw new ErrorNegocio(
+      409,
+      'CANTIDAD_BLOQUEADA',
+      'La cantidad solo puede cambiar antes de iniciar la producción. Puedes corregir el número y el cliente.',
+    );
+  const pedido = await ModeloPedido.findOneAndUpdate(
+    { _id: id, ...filtroVersionPedido(version) },
+    {
+      $set: {
+        numero: datos.numero,
+        cliente: datos.cliente,
+        cantidad: datos.cantidad,
+        ...(cambiaCantidad
+          ? {
+              paquetes: datos.unidades.map((unidades, indice) => ({
+                numero: indice + 1,
+                unidades,
+                estado: 'pendiente',
+                version: 0,
+                historial: [],
+              })),
+            }
+          : {}),
+      },
+      $inc: { versionPedido: 1 },
+    },
+    { returnDocument: 'after', runValidators: true },
+  );
+  if (!pedido) conflictoPedido();
+  respuesta.json(presentarPedido(pedido));
+});
+
+/** La confirmación textual evita una eliminación involuntaria; la versión evita borrar cambios nuevos. */
+rutasPedidos.delete('/:id', async (solicitud, respuesta) => {
+  const id = validarId(solicitud.params['id']);
+  const version = validarVersionPedido(solicitud.body);
+  const confirmacion: unknown = solicitud.body?.numeroConfirmacion;
+  if (typeof confirmacion !== 'string' || !confirmacion.trim() || confirmacion.length > 50)
+    throw new ErrorNegocio(
+      400,
+      'CONFIRMACION_INVALIDA',
+      'Escribe el número exacto del pedido para confirmar la eliminación.',
+    );
+  const actual = await ModeloPedido.findById(id);
+  if (!actual) throw new ErrorNegocio(404, 'PEDIDO_NO_ENCONTRADO', 'No se encontró el pedido.');
+  if ((actual.versionPedido ?? 0) !== version) conflictoPedido();
+  if (confirmacion.trim() !== actual.numero)
+    throw new ErrorNegocio(
+      400,
+      'CONFIRMACION_INVALIDA',
+      'El número de confirmación no coincide con el pedido.',
+    );
+  const resultado = await ModeloPedido.deleteOne({
+    _id: id,
+    numero: actual.numero,
+    ...filtroVersionPedido(version),
+  });
+  if (!resultado.deletedCount) conflictoPedido();
+  respuesta.status(204).end();
+});
+
 rutasPedidos.post('/:id/paquetes/:paqueteId/transiciones', async (solicitud, respuesta) => {
   const id = validarId(solicitud.params['id']);
   const paqueteId = validarId(solicitud.params['paqueteId']);
@@ -222,7 +300,7 @@ rutasPedidos.post('/:id/paquetes/:paqueteId/transiciones', async (solicitud, res
     },
     {
       $set: { 'paquetes.$.estado': transicion.destino },
-      $inc: { 'paquetes.$.version': 1 },
+      $inc: { 'paquetes.$.version': 1, versionPedido: 1 },
       $push: {
         'paquetes.$.historial': {
           fecha: new Date(),
