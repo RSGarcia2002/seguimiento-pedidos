@@ -1,0 +1,155 @@
+/* El diálogo nativo mantiene el foco dentro de la guía y bloquea cambios accidentales. */
+dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  max-width: 100%;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  color: var(--color-texto);
+}
+dialog::backdrop {
+  background: rgb(18 18 18 / 36%);
+}
+.destacado {
+  position: fixed;
+  border: 2px solid var(--color-acento);
+  border-radius: 6px;
+  box-shadow: 0 0 0 9999px rgb(18 18 18 / 24%);
+  pointer-events: none;
+}
+.tarjeta-guia {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: min(460px, calc(100% - 32px));
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  background: white;
+  border: 1px solid var(--color-borde);
+  border-top: 3px solid var(--color-acento);
+  border-radius: 6px;
+  box-shadow: 0 16px 60px rgb(0 0 0 / 22%);
+  padding: 24px;
+  box-sizing: border-box;
+}
+.tarjeta-guia.bienvenida {
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  width: min(540px, calc(100% - 32px));
+}
+.tarjeta-guia.arriba {
+  top: 24px;
+  bottom: auto;
+}
+.cabecera-guia {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.cerrar-guia {
+  border: 0;
+  background: transparent;
+  font-size: 28px;
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+  padding: 0 6px;
+}
+.contador {
+  color: var(--color-acento);
+  font-size: 12px;
+  margin: 12px 0;
+}
+h2 {
+  font-size: 24px;
+  line-height: 1.2;
+  margin: 0 0 14px;
+}
+h2:focus {
+  outline: none;
+}
+#texto-guia {
+  line-height: 1.65;
+  font-size: 15px;
+  margin: 0 0 18px;
+}
+.nota-guia,
+.espera {
+  padding: 10px 12px;
+  background: var(--color-superficie, #f3f3f3);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.progreso {
+  background: #eee;
+  height: 3px;
+  margin: 20px 0;
+}
+.progreso span {
+  display: block;
+  background: var(--color-acento);
+  height: 100%;
+}
+.acciones-guia,
+.acciones-guia > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.acciones-guia .boton {
+  padding: 10px 14px;
+  font-size: 13px;
+}
+.omitir {
+  padding: 8px 0;
+  background: none;
+  border: 0;
+  color: var(--color-texto-secundario);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 12px;
+}
+@media (max-width: 600px) {
+  .tarjeta-guia {
+    right: 16px;
+    bottom: 16px;
+    padding: 18px;
+    max-height: 52dvh;
+  }
+  .tarjeta-guia.bienvenida {
+    max-height: calc(100dvh - 32px);
+  }
+  h2 {
+    font-size: 21px;
+  }
+  #texto-guia {
+    font-size: 14px;
+  }
+  .acciones-guia {
+    flex-wrap: wrap;
+  }
+  .acciones-guia > div {
+    margin-left: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .destacado {
+    transition: none;
+  }
+}
+
+.cabecera-guia .antetitulo {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--color-texto-secundario);
+}

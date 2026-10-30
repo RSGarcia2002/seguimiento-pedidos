@@ -112,3 +112,18 @@ El flujo E2E debe comprobar que el botón primario conserva fondo vino y espacia
 - Listado: cliente exacto, desde/hasta (fechas civiles de Guatemala incluyentes) y orden
   recientes|antiguos|menor_avance|sin_movimiento. Fechas inválidas o invertidas devuelven 400.
   Los filtros actúan antes de la paginación; el resumen superior continúa siendo global.
+
+## Recorrido guiado de la interfaz
+
+La primera visita ofrece una bienvenida que permite comenzar u omitir el recorrido. El
+encabezado mantiene «Guía paso a paso» para repetirlo. La preferencia se guarda solo en
+el navegador y su ausencia o bloqueo no impide usar la aplicación.
+
+La guía destaca elementos existentes y explica listado, creación, filtros, CSV, detalle,
+paquetes, historial, estadísticas, alertas y resumen. Navega entre secciones con controles
+Anterior/Siguiente, contador de pasos, cierre y tecla Escape. El detalle utiliza un pedido
+existente; si no hay pedidos, omite sus pasos. No crea registros, cambia estados, genera
+resúmenes ni abre acciones de escritura automáticamente. Los fallos de carga no bloquean
+el cierre. El diálogo conserva el foco, admite teclado y se adapta a móviles.
+
+No se modifica el contrato HTTP: la guía reutiliza únicamente consultas GET existentes.

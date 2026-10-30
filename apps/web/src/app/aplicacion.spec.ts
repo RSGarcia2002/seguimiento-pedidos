@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Aplicacion } from './aplicacion';
@@ -7,7 +8,7 @@ describe('Aplicacion', () => {
     // Montamos el componente para comprobar el contenido visible de la base inicial.
     await TestBed.configureTestingModule({
       imports: [Aplicacion],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), provideHttpClient()],
     }).compileComponents();
     const componente = TestBed.createComponent(Aplicacion);
     componente.detectChanges();

@@ -35,3 +35,11 @@ La aplicación de evaluación no incluye autenticación, eliminación o edición
 El límite de 100000 unidades mantiene acotados los documentos. Los pedidos DEMO son ejemplos.
 La publicación solo se declara completa después de verificar la URL pública.
 La CI está preparada como plantilla; activarla requiere permiso workflow en GitHub.
+
+## Recorrido dentro de la aplicación
+
+El botón «Guía paso a paso» del encabezado muestra una visita explicada de las pantallas.
+Se ofrece también en la primera visita y puede omitirse. Dura 12 pasos cuando existen
+pedidos; utiliza un pedido abierto cuando está disponible, sin ejecutar cambios.
+Los pasos de detalle se omiten si la base está vacía. Permite usar Anterior, Siguiente,
+Finalizar o Escape y repetirlo después.

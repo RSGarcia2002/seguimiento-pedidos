@@ -100,3 +100,13 @@ paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.
 - Publicación aa9a172 confirmada live en Render (dep-dbhtfh4s728c73d5qm4g).
   Verificación pública GET alertas y POST análisis: reglas/sin_configurar; filtro exacto
   de cliente: 12 coincidencias válidas. Chrome sin errores y sin desbordamiento móvil.
+
+### Recorrido guiado — 29/10/2026
+
+- Especificación actualizada antes del componente. Se reutilizan GET existentes.
+- Bienvenida inicial y acceso permanente, 12 pasos con pedido existente y navegación
+  entre listado, detalle, estadísticas y alertas. Sin escrituras automáticas.
+- Diálogo nativo para foco y teclado, Escape, cierre, omisión, retroceso y preferencia local.
+- Prueba E2E recorre todas las etapas, comprueba ausencia de POST y otros métodos de
+  escritura, igualdad del pedido antes/después, repetición, foco y móvil de 390/320px.
+- Compilación, prueba Angular y los dos recorridos E2E aprobados.

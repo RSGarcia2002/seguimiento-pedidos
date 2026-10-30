@@ -205,3 +205,11 @@ Código propio, comentarios y documentación en español. Se conservan los ident
 ## Alertas y resumen operativo
 
 Disponible en `/operacion`: revisiones detenidas, pedidos sin actividad y rechazos repetidos, con evidencia y enlaces. Funciona sin pagos ni claves mediante reglas explícitas. El listado permite filtros por cliente y fechas, y orden por avance o antigüedad. Consulta [criterios, IA opcional y pruebas](docs/operacion.md).
+
+## Guía paso a paso
+
+La primera visita ofrece un recorrido de la aplicación. También puede iniciarse desde
+**Guía paso a paso** en el encabezado. Explica pedidos, creación, filtros, CSV, paquetes,
+historial, estadísticas, alertas y resumen, resaltando cada sección. Incluye anterior,
+siguiente, omitir y cierre con Escape. La guía solo consulta datos y omite el detalle
+si no existe un pedido; la preferencia de bienvenida se guarda en el navegador.

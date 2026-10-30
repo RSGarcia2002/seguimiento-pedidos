@@ -13,6 +13,7 @@ prueba.afterAll(async () => {
 prueba(
   'crear, rechazar, completar y consultar un pedido real desde el navegador',
   async ({ page: pagina }) => {
+    await pagina.addInitScript(() => localStorage.setItem('tata-recorrido-v1', 'vista'));
     await pagina.goto('/');
     await esperar(
       pagina.getByRole('heading', { name: 'Tus pedidos, en movimiento.' }),

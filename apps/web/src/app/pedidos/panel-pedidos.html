@@ -24,7 +24,11 @@
           Una vista clara de cada pedido, desde la primera unidad hasta la última.
         </p>
       </div>
-      <button class="boton primario" (click)="abrirFormulario(formularioPedido)">
+      <button
+        class="boton primario"
+        data-guia="nuevo-pedido"
+        (click)="abrirFormulario(formularioPedido)"
+      >
         <span aria-hidden="true">＋</span> Nuevo pedido
       </button>
     </div>
@@ -239,7 +243,11 @@
               : 'Registra un pedido y dividiremos sus unidades en paquetes de hasta 100.'
           }}
         </p>
-        <button class="boton primario" (click)="abrirFormulario(formularioPedido)">
+        <button
+          class="boton primario"
+          data-guia="nuevo-pedido"
+          (click)="abrirFormulario(formularioPedido)"
+        >
           Crear un pedido
         </button>
       </div>

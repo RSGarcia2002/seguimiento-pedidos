@@ -1,0 +1,101 @@
+<dialog
+  #dialogo
+  aria-labelledby="titulo-guia"
+  aria-describedby="texto-guia"
+  (cancel)="$event.preventDefault(); cerrar()"
+>
+  @if (destacado(); as zona) {
+    <div
+      class="destacado"
+      aria-hidden="true"
+      [style.left.px]="zona.izquierda"
+      [style.top.px]="zona.arriba"
+      [style.width.px]="zona.ancho"
+      [style.height.px]="zona.alto"
+    ></div>
+  }
+  <section
+    class="tarjeta-guia"
+    [class.bienvenida]="bienvenida()"
+    [class.arriba]="tarjetaArriba() && !bienvenida()"
+  >
+    <div class="cabecera-guia">
+      <span class="antetitulo">{{
+        bienvenida() ? 'BIENVENIDO A TATA' : 'GUÍA DE LA APLICACIÓN'
+      }}</span
+      ><button type="button" class="cerrar-guia" aria-label="Cerrar guía" (click)="cerrar()">
+        ×
+      </button>
+    </div>
+    <p class="contador" aria-live="polite">
+      {{
+        bienvenida()
+          ? 'Conoce tu espacio de trabajo'
+          : 'Paso ' + (indice() + 1) + ' de ' + pasos().length
+      }}
+    </p>
+    <h2 #titulo id="titulo-guia" tabindex="-1">
+      {{ bienvenida() ? 'Te mostramos cómo funciona.' : pasos()[indice()]?.titulo }}
+    </h2>
+    <p id="texto-guia">
+      {{
+        bienvenida()
+          ? 'Recorre pedidos, paquetes, estadísticas y alertas con una explicación en cada pantalla. Puedes salir cuando quieras y volver desde «Guía paso a paso».'
+          : pasos()[indice()]?.texto
+      }}
+    </p>
+    @if (bienvenida()) {
+      <p class="nota-guia">El recorrido solo consulta información. Tus pedidos no se modifican.</p>
+    }
+    @if (aviso()) {
+      <p class="nota-guia" role="status">{{ aviso() }}</p>
+    }
+    @if (preparando()) {
+      <p class="espera" role="status">Preparando la siguiente pantalla…</p>
+    }
+    @if (!bienvenida()) {
+      <div
+        class="progreso"
+        role="progressbar"
+        aria-label="Avance del recorrido"
+        [attr.aria-valuenow]="indice() + 1"
+        aria-valuemin="1"
+        [attr.aria-valuemax]="pasos().length"
+      >
+        <span [style.width.%]="((indice() + 1) / pasos().length) * 100"></span>
+      </div>
+    }
+    <div class="acciones-guia">
+      @if (bienvenida()) {
+        <button class="boton secundario" type="button" (click)="cerrar()">Ahora no</button>
+        <button class="boton primario" type="button" [disabled]="preparando()" (click)="comenzar()">
+          Comenzar recorrido
+        </button>
+      } @else {
+        <button class="omitir" type="button" (click)="cerrar()">Omitir guía</button>
+        <div>
+          <button
+            class="boton secundario"
+            type="button"
+            [disabled]="preparando() || indice() === 0"
+            (click)="mostrar(indice() - 1)"
+          >
+            Anterior
+          </button>
+          @if (indice() === pasos().length - 1) {
+            <button class="boton primario" type="button" (click)="cerrar()">Finalizar</button>
+          } @else {
+            <button
+              class="boton primario"
+              type="button"
+              [disabled]="preparando()"
+              (click)="mostrar(indice() + 1)"
+            >
+              Siguiente →
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </section>
+</dialog>

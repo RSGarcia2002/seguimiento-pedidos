@@ -22,7 +22,9 @@
       <a routerLink="/operacion" routerLinkActive="seccion-activa" ariaCurrentWhenActive="page"
         >Alertas</a
       >
-      <span class="etiqueta">CONTROL DE PRODUCCIÓN</span>
+      <button class="acceso-guia" type="button" (click)="guia.abrir()">
+        ? <span>Guía paso a paso</span>
+      </button>
     </nav>
   </div>
 </header>
@@ -33,3 +35,5 @@
     ><span>Entorno de demostración · Datos sintéticos</span>
   </div>
 </footer>
+
+<app-recorrido-guiado #guia />
