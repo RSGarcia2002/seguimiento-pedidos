@@ -1,23 +1,26 @@
-# Borrador de correo de entrega
+# Correo listo para enviar
 
-Este texto está preparado para copiarlo al responder el correo de la evaluación. No se ha enviado ningún mensaje.
+Responder al correo original de la evaluación. Este borrador no se ha enviado.
+El plazo es de 24 horas desde su recepción; no se conoce aquí la hora exacta del correo.
 
-**Asunto:** Entrega de prueba técnica – Desarrollador Jr. IA – Randall
+**Asunto:** Entrega de prueba técnica - Desarrollador de Software Jr. IA - Randall García
 
-Buen día:
+Buen día, Josué:
 
-Comparto la solución de la prueba técnica de seguimiento de pedidos:
+Comparto la solución de la prueba técnica «Seguimiento de pedidos»:
 
-- Aplicación: https://seguimiento-pedidos-tata.onrender.com/
+- Aplicación publicada: https://seguimiento-pedidos-tata.onrender.com/
 - Repositorio público: https://github.com/RSGarcia2002/seguimiento-pedidos
 
-La aplicación utiliza Angular, Node.js, MongoDB Atlas y TypeScript. Incluye creación y partición automática de pedidos, seguimiento por paquete, rechazo desde revisión y avance por unidades listas. Como extras, incorpora historial con motivos de rechazo, filtros, exportación CSV y un apartado de estadísticas operativas con períodos de 7, 30 y 90 días. La demostración incluye un lote sintético de 96 pedidos adicionales con cronología y estados coherentes.
+La solución está desarrollada con Angular, Node.js, Express, MongoDB Atlas y TypeScript, siguiendo SDD con apoyo de Codex. Implementa el registro de pedidos, división automática en paquetes de hasta 100 unidades, validaciones, flujo de producción con rechazo desde Revisión, avance por unidades listas y persistencia.
 
-En el repositorio se encuentran la especificación SDD, el contrato de la API, las pruebas automatizadas y el README con instrucciones de instalación y un error real del agente de IA y su corrección.
+Como mejoras, incluye CRUD completo de pedidos con control de concurrencia, historial, filtros, exportación CSV, estadísticas, alertas y un recorrido guiado. Los datos de demostración están identificados como sintéticos.
 
-El alojamiento utiliza el plan gratuito de Render, por lo que la primera carga después de un período de inactividad puede tardar aproximadamente un minuto.
+El repositorio contiene el código, pruebas automatizadas, especificación, contrato OpenAPI y un manual técnico y de usuario con instalación, metodología y documentación de un error del agente y su corrección.
 
-Quedo atento a sus comentarios.
+El alojamiento utiliza el plan gratuito de Render; la primera carga tras un período de inactividad puede tardar mientras se reactiva el servicio.
+
+Quedo atento a sus comentarios y disponible para presentar la solución.
 
 Saludos,
-Randall
+Randall García

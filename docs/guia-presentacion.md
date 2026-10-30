@@ -1,49 +1,120 @@
-# Guía breve para presentar la solución
+# Guion de presentación y defensa
 
-## Recorrido de demostración (3 a 5 minutos)
-1. Mostrar el panel: indicadores globales, búsqueda y filtros.
-2. Crear un pedido de 250 unidades. Antes de guardarlo, enseñar la vista previa 100 + 100 + 50.
-3. Abrir el detalle. Los tres paquetes comienzan Pendiente.
-4. Avanzar el paquete de 50 hasta Revisión, rechazarlo con un motivo y consultar el historial.
-5. Enviarlo de nuevo a Revisión y marcarlo Listo. Explicar por qué el avance es 20%.
-6. Recargar: estados e historial permanecen guardados en MongoDB.
-7. Intentar crear otro pedido con el mismo número y mostrar la validación.
-8. Abrir Estadísticas: cambiar entre 7, 30 y 90 días, mostrar la tabla diaria y explicar
-   que producción del período y avance actual de la cartera son indicadores distintos.
-   Aclarar que los 96 pedidos adicionales son sintéticos y sus clientes ficticios.
-9. Mostrar el repositorio: especificación, contrato OpenAPI, pruebas y README.
+Fecha prevista: viernes 30 de octubre de 2026. Duración sugerida: 6 a 8 minutos.
+Presentar la aplicación real; el manual y sus capturas sirven como respaldo.
 
-## Decisiones que conviene explicar
-- **SDD:** se definieron reglas y contrato antes de implementar y verificar la aplicación.
-- **Paquetes embebidos:** creación del pedido en una sola escritura, sin paquetes huérfanos.
-- **Número único:** índice MongoDB; no depende solo de una consulta previa ni de Angular.
-- **Concurrencia:** estado y versión en la condición de actualización. El historial se agrega
-  en la misma escritura; un doble clic no puede saltar estados.
-- **Avance:** suma de unidades de paquetes Listos dividida entre unidades totales.
-- **Persistencia:** base real; las pruebas comprueban una desconexión y reconexión.
-- **Extra:** historial con motivos de rechazo y exportación CSV. Incluye estadísticas, filtros y alertas con resumen por reglas. No requiere una clave para operar. Gemini es opcional y permanece desactivado sin configuración; se probó con una simulación HTTP local.
-- **Publicación:** un servidor Express sirve API y Angular desde el mismo origen; Atlas guarda
-  los datos fuera del sistema de archivos del alojamiento.
+## 1. Preparación antes de la reunión
 
-## Uso de IA y error real
-Codex ayudó con especificación, implementación y verificación. Un error de inferencia de
-Mongoose con nombres de fechas en español rompió la compilación. Se corrigió usando
-nombres literales (`as const`), manteniendo el tipado estricto y validando con pruebas reales.
+- Abrir la aplicación 10 minutos antes para permitir que Render se reactive.
+- Tener abiertas las pestañas Pedidos, Estadísticas, Alertas y el README de GitHub.
+- Abrir el manual PDF y este guion como respaldo local.
+- Revisar que /api/salud responda con baseDatos conectada.
+- Omitir la bienvenida si se va a realizar una demostración manual.
+- Usar un pedido nuevo y claramente identificable, por ejemplo PRESENTACION-3010-01.
+- No editar ni eliminar los pedidos de muestra para demostrar el CRUD.
 
-## Límites que se deben comunicar
-La aplicación de evaluación no incluye autenticación, eliminación o edición de cantidades.
-El límite de 100000 unidades mantiene acotados los documentos. Los pedidos DEMO son ejemplos.
-La publicación solo se declara completa después de verificar la URL pública.
-La CI está preparada como plantilla; activarla requiere permiso workflow en GitHub.
+## 2. Apertura: 30 segundos
 
-## Recorrido dentro de la aplicación
+«Desarrollé una aplicación para registrar pedidos y dar seguimiento a su producción por paquetes. Utilicé Angular y TypeScript en la interfaz, Node.js con Express en el servidor y MongoDB Atlas para persistir los datos. Seguí SDD: primero definí las reglas y el contrato, después implementé y verifiqué con apoyo de Codex».
 
-El botón «Guía paso a paso» del encabezado muestra una visita explicada de las pantallas.
-Se ofrece también en la primera visita y puede omitirse. Dura 12 pasos cuando existen
-pedidos; utiliza un pedido abierto cuando está disponible, sin ejecutar cambios.
-Los pasos de detalle se omiten si la base está vacía. Permite usar Anterior, Siguiente,
-Finalizar o Escape y repetirlo después.
+## 3. Demostración: 5 a 6 minutos
 
-## CRUD completo
+### Paso 1. Panel y creación: 45 segundos
 
-Desde el detalle se puede editar número y cliente, y cambiar cantidad antes del primer movimiento. Eliminar exige escribir el número exacto y borra definitivamente paquetes e historial. Editar y eliminar utilizan versión del pedido para detectar cambios concurrentes. Demostrarlo únicamente con un pedido creado para la presentación.
+Mostrar indicadores y pulsar Nuevo pedido. Registrar un número nuevo, un cliente de demostración y 250 unidades.
+
+«El servidor valida que la cantidad sea entera positiva y que el número sea único. Divide 250 unidades en paquetes de 100, 100 y 50. La vista previa explica el resultado, pero la autoridad de la regla está en el backend».
+
+Guardar y mostrar los tres paquetes pendientes.
+
+### Paso 2. Edición: 30 segundos
+
+Pulsar Editar pedido. Corregir el cliente, mantener las 250 unidades y guardar.
+
+«El CRUD permite corregir número y cliente. La cantidad solo puede cambiar antes del primer movimiento; después se bloquea para conservar paquetes e historial. Cada edición utiliza la versión actual del pedido».
+
+### Paso 3. Producción, rechazo y avance: 90 segundos
+
+En el paquete de 50 unidades: Iniciar, Enviar a revisión, Rechazar. Escribir «Revisar acabado» y confirmar. Consultar el historial; enviar nuevamente a Revisión y marcar Listo.
+
+«Los estados solo avanzan en orden. La única devolución permitida es de Revisión a En proceso. Estado, versión e historial se guardan en la misma escritura atómica».
+
+«El avance es 20 %, porque hay 50 unidades listas de 250. No se calcula por número de paquetes».
+
+Recargar y comprobar que el estado y el historial permanecen.
+
+### Paso 4. Consultas y estadísticas: 45 segundos
+
+Volver al listado, buscar el pedido y señalar filtros y CSV. Abrir Estadísticas y cambiar el período.
+
+«La cartera corresponde a pedidos creados durante el período. La actividad cuenta lo terminado dentro de esas fechas, incluso si el pedido se recibió antes. Los indicadores se calculan con MongoDB y la muestra ampliada es sintética».
+
+### Paso 5. Alertas y resumen: 40 segundos
+
+Abrir Alertas y generar un resumen.
+
+«Las alertas detectan revisiones detenidas, pedidos sin cambios y rechazos repetidos. El resumen actual funciona por reglas, sin una clave externa. Gemini quedó como integración opcional, probada por simulación, pero no activada ni verificada con Google. El análisis no modifica pedidos».
+
+### Paso 6. Eliminación: 30 segundos
+
+Abrir únicamente el pedido creado para la demostración. Pulsar Eliminar pedido, mostrar el aviso, escribir su número exacto y confirmar si se desea limpiar el ejemplo.
+
+«Eliminar borra definitivamente el pedido, sus paquetes e historial. Por eso exige una confirmación explícita y comprueba la versión antes de borrar. Las estadísticas se recalculan en la siguiente consulta».
+
+### Paso 7. Evidencia técnica y cierre: 40 segundos
+
+Mostrar README, docs/spec.md, docs/openapi.json y los directorios de pruebas.
+
+«La entrega incluye 50 comprobaciones backend, una prueba Angular y tres recorridos E2E aprobados. Las pruebas de datos usan bases aisladas. También preparé un manual técnico y de usuario, y una guía interactiva de 12 pasos».
+
+«La aplicación está publicada y el código es público. El alcance actual no incluye autenticación y utiliza datos sintéticos. La plantilla de CI está disponible, pero no activada».
+
+## 4. Preguntas frecuentes de defensa
+
+### ¿Por qué Angular, Node.js y MongoDB?
+
+Angular organiza la interfaz en componentes, formularios y rutas. Node.js permite utilizar TypeScript también en el servidor. MongoDB permite guardar pedido, paquetes e historial como un documento, con escrituras atómicas sobre esa unidad.
+
+### ¿Qué significa SDD en este proyecto?
+
+Definí requisitos, reglas y criterios en docs/spec.md, y el contrato HTTP en docs/openapi.json antes de implementar los comportamientos. Después comprobé esas reglas con pruebas y registré incidencias en docs/agent-log.md.
+
+### ¿Cómo evitas pedidos duplicados?
+
+Normalizo el número a mayúsculas y elimino espacios externos. Un índice único de MongoDB resuelve incluso dos creaciones simultáneas. Un duplicado devuelve HTTP 409.
+
+### ¿Qué pasa si dos personas cambian un pedido?
+
+Las transiciones comparan estado y versión del paquete. La edición y eliminación comparan versionPedido. La escritura es atómica: una solicitud obsoleta se rechaza para que se consulten los datos actuales.
+
+### ¿Por qué se bloquea la cantidad después de iniciar?
+
+Cambiarla obligaría a redefinir paquetes con movimientos existentes. La regla protege la coherencia del avance y del historial. Número y cliente siguen siendo corregibles.
+
+### ¿Dónde están los datos y qué pasa si se reinicia Render?
+
+Los datos están en MongoDB Atlas, separados del sistema de archivos del servicio. Reiniciar la aplicación no elimina los pedidos. El servidor comprueba su conexión antes de aceptar tráfico.
+
+### ¿Qué hizo Codex y qué error hubo?
+
+Ayudó con especificación, implementación, documentación y pruebas. Un error de inferencia en timestamps de Mongoose rompió la compilación al usar nombres de fechas en español. Se corrigió con literales as const, manteniendo el tipado estricto y verificando con pruebas reales.
+
+### ¿La aplicación usa IA generativa ahora?
+
+El desarrollo se hizo con apoyo de un agente de IA, como pide la prueba. El resumen en ejecución funciona por reglas. El cliente Gemini es opcional; sus respuestas y fallos se probaron con simulación HTTP, sin afirmar una llamada real al proveedor.
+
+### ¿Qué mejorarías para un uso empresarial?
+
+Autenticación y permisos, identificación del operador en auditoría, estrategia de respaldo y recuperación, límites de uso compartidos, monitoreo y CI activa. La versión presentada es una demostración funcional, no una plataforma multiempresa.
+
+## 5. Si algo falla durante la presentación
+
+- Si Render está reactivándose, abrir el repositorio y explicar la arquitectura mientras carga.
+- Si el número ya existe, usar otro número; no eliminar un pedido ajeno para continuar.
+- Si aparece un conflicto, actualizar y explicar el control de concurrencia.
+- Si no hay Internet, usar el PDF para explicar las pantallas y mostrar el código local. Las capturas son evidencia de la aplicación, no una demostración en vivo.
+- No activar una clave, facturación, CI o funciones nuevas durante la presentación.
+
+## 6. Mensaje de cierre
+
+«La solución cumple el flujo solicitado, conserva los datos y agrega herramientas de consulta y seguimiento. Las reglas están especificadas, las operaciones se verifican en el servidor y la entrega incluye pruebas y documentación para reproducirla».

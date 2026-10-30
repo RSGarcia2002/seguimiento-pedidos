@@ -1,5 +1,10 @@
 # Plan SDD
 
+## Estado final para entrega
+
+CRUD, estadísticas, alertas, recorrido y manual terminados. Última verificación: 50 comprobaciones backend, una prueba Angular y tres recorridos E2E. La CI queda como plantilla y Gemini desactivado sin clave. El listado siguiente conserva el historial de hitos y sus verificaciones originales.
+
+
 1. [x] Registrar requisitos y criterios antes de implementar.
 2. [x] Crear Angular y API Express con TypeScript estricto.
 3. [x] Configurar MongoDB persistente, entorno y scripts.

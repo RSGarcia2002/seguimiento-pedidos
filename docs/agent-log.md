@@ -150,3 +150,16 @@ paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.
   confirmación y eliminación con GET posterior 404. Sin errores del navegador.
   El registro temporal se eliminó; los pedidos existentes se conservaron.
 - Capturas actualizadas de detalle, edición y eliminación incorporadas al manual.
+
+### Preparación final para envío y presentación — 29/10/2026
+
+- Evaluación original revisada: enlaces de app y repositorio, SDD, pruebas, instalación
+  y error del agente cubiertos. Plazo de 24 horas desde recepción señalado sin inventar hora.
+- Correo actualizado, guion de 6-8 minutos con defensa y matriz de requisitos preparados.
+- Repetidas las comprobaciones finales: 50 backend, una Angular, compilación y tres E2E.
+- Verificación pública actual: Atlas conectado, 100 pedidos conservados, cuatro vistas
+  en 1440/390/320px sin desbordamiento ni errores de navegador.
+- Generados manual PDF (22 páginas) y guion PDF (4); todas las páginas renderizadas y
+  revisadas. Exportaciones locales excluidas de Git; el código fuente se empaqueta desde
+  archivos versionados y se comprueba la ausencia de credenciales.
+- Correo sin enviar. Solo quedan las acciones personales de envío y presentación.

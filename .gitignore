@@ -9,3 +9,8 @@ coverage/
 *.log
 test-results/
 playwright-report/
+
+# Material de entrega generado; no incluir archivos ZIP ni salidas en el código fuente.
+/entrega/
+/output/
+/tmp/
