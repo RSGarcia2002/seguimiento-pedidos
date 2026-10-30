@@ -1,215 +1,435 @@
-# Seguimiento de pedidos · TATA
+<!-- Fuente del manual. Regenerar la edición HTML con: npm run docs:manual -->
+<div align="center" class="portada">
+  <img src="docs/diagramas/portada-manual.svg" alt="TATA · Seguimiento de pedidos. Manual técnico y de usuario, edición 1.0." width="100%">
+  <h1>Manual técnico y de usuario</h1>
+  <p><strong>Sistema web de seguimiento de pedidos y control de producción</strong></p>
+  <p>Registro · Paquetes · Trazabilidad · Estadísticas · Seguimiento operativo</p>
+  <p><a href="https://seguimiento-pedidos-tata.onrender.com/">Abrir aplicación</a> · <a href="#manual-usuario">Manual de usuario</a> · <a href="#manual-tecnico">Manual técnico</a> · <a href="docs/manual/index.html">Edición HTML para abrir e imprimir</a></p>
+</div>
 
-Aplicación web para registrar pedidos, dividirlos en paquetes de hasta 100 unidades y dar seguimiento a su producción. Desarrollada con **Angular, Node.js, Express, MongoDB y TypeScript**, utilizando **SDD con apoyo de Codex**.
+<table class="ficha">
+  <tr><th colspan="2">Control del documento</th></tr>
+  <tr><td><strong>Proyecto</strong></td><td>Seguimiento de pedidos · TATA</td></tr>
+  <tr><td><strong>Autor</strong></td><td>Randall García</td></tr>
+  <tr><td><strong>Edición / fecha</strong></td><td>1.0 · 29 de octubre de 2026</td></tr>
+  <tr><td><strong>Versión de la aplicación</strong></td><td>0.1.0, según el paquete raíz del repositorio</td></tr>
+  <tr><td><strong>Tipo de entrega</strong></td><td>Demostración funcional para evaluación técnica</td></tr>
+  <tr><td><strong>Destinatarios</strong></td><td>Usuarios de la aplicación, evaluadores y desarrolladores</td></tr>
+  <tr><td><strong>Repositorio</strong></td><td><a href="https://github.com/RSGarcia2002/seguimiento-pedidos">github.com/RSGarcia2002/seguimiento-pedidos</a></td></tr>
+</table>
 
-**Estado:** publicada y verificada con MongoDB Atlas.
+<blockquote><strong>Estado de la entrega.</strong> Aplicación publicada con persistencia en MongoDB Atlas. La muestra inicial contiene 100 pedidos sintéticos. El resumen operativo funciona por reglas; la integración generativa con Gemini está preparada, desactivada sin clave y verificada mediante simulación HTTP. No hay autenticación ni separación por usuarios.</blockquote>
 
-- **Aplicación:** [seguimiento-pedidos-tata.onrender.com](https://seguimiento-pedidos-tata.onrender.com/)
-- **Código público:** [RSGarcia2002/seguimiento-pedidos](https://github.com/RSGarcia2002/seguimiento-pedidos)
-- **Correo preparado:** [borrador de entrega](docs/entrega.md).
-- **Demostración:** [guía de presentación](docs/guia-presentacion.md).
+<h2 id="contenido">Contenido</h2>
+<ol>
+  <li><a href="#presentacion">Presentación, objetivos y alcance</a></li>
+  <li><a href="#manual-usuario">Manual de usuario</a>: acceso, navegación y recorrido guiado</li>
+  <li><a href="#registro">Registro y consulta de pedidos</a></li>
+  <li><a href="#produccion">Producción por paquetes e historial</a></li>
+  <li><a href="#estadisticas">Estadísticas e interpretación de indicadores</a></li>
+  <li><a href="#alertas">Alertas y resumen operativo</a></li>
+  <li><a href="#manual-tecnico">Manual técnico</a>: arquitectura y tecnologías</li>
+  <li><a href="#metodologia">Metodología y decisiones de diseño</a></li>
+  <li><a href="#datos">Modelo de datos y reglas de negocio</a></li>
+  <li><a href="#instalacion">Instalación y configuración local</a></li>
+  <li><a href="#api">Contrato de la API</a></li>
+  <li><a href="#verificacion">Pruebas y trazabilidad de requisitos</a></li>
+  <li><a href="#despliegue">Despliegue, seguridad y mantenimiento</a></li>
+  <li><a href="#problemas">Solución de problemas</a></li>
+  <li><a href="#anexos">Glosario, anexos y referencias</a></li>
+</ol>
 
-![Panel público de seguimiento de pedidos](docs/capturas/panel.png)
+<h2 id="presentacion">01 · Presentación, objetivos y alcance</h2>
+<p>El sistema centraliza el seguimiento de pedidos que se producen por paquetes. Permite conocer el estado de cada grupo de unidades, conservar sus movimientos y consultar indicadores operativos. La interfaz está en español y comparte la identidad visual de referencia: superficies claras, tipografía Jost y acento vino.</p>
+<h3>Objetivo general</h3>
+<p>Registrar pedidos y controlar su avance mediante paquetes de hasta 100 unidades, con reglas de transición verificadas por el servidor y persistencia en MongoDB.</p>
+<h3>Objetivos específicos</h3>
+<ul>
+  <li>Dividir correctamente la cantidad solicitada y evitar números de pedido duplicados.</li>
+  <li>Registrar producción, revisión, rechazo y terminación de cada paquete.</li>
+  <li>Calcular el avance según unidades terminadas y conservar la trazabilidad.</li>
+  <li>Facilitar búsquedas, exportación, estadísticas y seguimiento mediante alertas.</li>
+  <li>Ofrecer una instalación reproducible, pruebas automatizadas y documentación verificable.</li>
+</ul>
+<table>
+  <tr><th>Incluido en la entrega</th><th>Fuera del alcance actual</th></tr>
+  <tr><td>Pedidos, paquetes, historial, filtros, CSV, estadísticas, alertas, resumen por reglas y guía interactiva.</td><td>Inicio de sesión, roles, separación por empresa, edición o eliminación de pedidos, inventario, facturación y notificaciones.</td></tr>
+  <tr><td>Integración opcional de consulta con Gemini y alternativa automática por reglas.</td><td>Activación generativa sin clave, modificación autónoma de pedidos y predicciones de entrega.</td></tr>
+</table>
 
-![Estadísticas operativas de la muestra sintética](docs/capturas/estadisticas.png)
+<h2 id="manual-usuario">02 · Manual de usuario</h2>
+<h3>2.1 Acceso y requisitos de uso</h3>
+<p>Abra <a href="https://seguimiento-pedidos-tata.onrender.com/">la aplicación publicada</a> en un navegador con JavaScript habilitado y conexión a Internet. No se solicita una cuenta. La interfaz fue comprobada en Chrome, en escritorio y en anchos de 390 y 320 píxeles. En la primera carga, el servicio gratuito puede necesitar tiempo para reactivarse.</p>
+<table>
+  <tr><th>Sección</th><th>Dirección</th><th>Propósito</th></tr>
+  <tr><td>Pedidos</td><td><code>/</code></td><td>Registrar, buscar y consultar pedidos.</td></tr>
+  <tr><td>Detalle</td><td><code>/pedidos/:id</code></td><td>Operar paquetes y consultar su historial.</td></tr>
+  <tr><td>Estadísticas</td><td><code>/estadisticas</code></td><td>Consultar indicadores de 7, 30 o 90 días.</td></tr>
+  <tr><td>Alertas</td><td><code>/operacion</code></td><td>Identificar situaciones de seguimiento y generar un resumen.</td></tr>
+</table>
+<h3>2.2 Recorrido guiado</h3>
+<p>La primera visita ofrece una bienvenida. Pulse <strong>Comenzar recorrido</strong> para seguir las explicaciones o <strong>Ahora no</strong> para entrar directamente. El botón <strong>Guía paso a paso</strong> del encabezado permite repetir la visita.</p>
+<ul>
+  <li><strong>Siguiente / Anterior:</strong> cambian de explicación y navegan a la sección correspondiente.</li>
+  <li><strong>Omitir guía, cerrar o Escape:</strong> terminan el recorrido en cualquier momento.</li>
+  <li><strong>Finalizar:</strong> cierra el último paso. La preferencia se conserva en el navegador.</li>
+</ul>
+<p>La visita tiene 12 pasos cuando existen pedidos y omite el detalle si la base está vacía. Solo consulta información: no crea pedidos, no avanza paquetes y no genera análisis automáticamente.</p>
+<p align="center"><img src="docs/capturas/guia-escritorio.png" alt="Guía interactiva resaltando los indicadores del listado y mostrando controles de navegación" width="100%"><br><em>Figura 1. Recorrido guiado con elemento destacado y contador de pasos.</em></p>
 
+<h2 id="registro">03 · Registro y consulta de pedidos</h2>
+<h3>3.1 Crear un pedido</h3>
+<table>
+  <tr><th>Paso</th><th>Acción del usuario</th><th>Resultado esperado</th></tr>
+  <tr><td>1</td><td>Ingrese a Pedidos y pulse <strong>Nuevo pedido</strong>.</td><td>Se abre el formulario de registro.</td></tr>
+  <tr><td>2</td><td>Escriba un número único, el nombre del cliente y una cantidad entera positiva.</td><td>La vista previa muestra la división en paquetes.</td></tr>
+  <tr><td>3</td><td>Revise los datos y pulse <strong>Crear pedido</strong>.</td><td>El servidor valida los datos y guarda el pedido con sus paquetes.</td></tr>
+  <tr><td>4</td><td>Consulte el detalle abierto después de guardar.</td><td>Todos los paquetes comienzan en Pendiente y el avance es 0 %.</td></tr>
+</table>
+<p><strong>Ejemplo:</strong> número <code>PRUEBA-250</code>, cliente <code>Cliente de demostración</code>, cantidad <code>250</code>. Se generan tres paquetes: <strong>100 + 100 + 50</strong>. El número se normaliza a mayúsculas; registrar después <code>prueba-250</code> se considera un duplicado.</p>
+<h3>3.2 Buscar, filtrar y ordenar</h3>
+<p>Use la búsqueda por número o cliente, seleccione el estado y combine cliente exacto, fechas de creación y orden. Pulse <strong>Buscar</strong> para aplicar los valores. <strong>Limpiar filtros</strong> restablece el listado.</p>
+<table>
+  <tr><th>Control</th><th>Interpretación</th></tr>
+  <tr><td>Todos / Pendientes / En curso / Completados</td><td>Clasificación derivada de los estados de los paquetes.</td></tr>
+  <tr><td>Desde / Hasta</td><td>Fechas de creación inclusivas, interpretadas según Guatemala (UTC−6).</td></tr>
+  <tr><td>Más recientes / Más antiguos</td><td>Orden por fecha de creación.</td></tr>
+  <tr><td>Menor avance</td><td>Prioriza el porcentaje de unidades listas más bajo.</td></tr>
+  <tr><td>Último movimiento más antiguo</td><td>Ordena por la actualización más antigua.</td></tr>
+</table>
+<p>El listado muestra 12 pedidos por página de forma predeterminada. Los indicadores superiores representan la operación completa; no se reducen al aplicar filtros. <strong>Exportar página CSV</strong> descarga únicamente las filas de la página visible.</p>
+<p align="center"><img src="docs/capturas/manual-pedidos.png" alt="Listado actual con indicadores, filtros por cliente y fechas y tabla de pedidos" width="100%"><br><em>Figura 2. Panel de pedidos y controles de consulta.</em></p>
 
-## Funcionalidades
+<h2 id="produccion">04 · Producción por paquetes e historial</h2>
+<p>Abra <strong>Ver detalle</strong> en una fila. La cabecera presenta cliente, cantidad, paquetes y avance; debajo aparecen las tarjetas individuales.</p>
+<p align="center"><img src="docs/diagramas/flujo-paquetes.svg" alt="Estados de un paquete y devolución desde Revisión hacia En proceso" width="100%"><br><em>Figura 3. Ciclo permitido de producción.</em></p>
+<table>
+  <tr><th>Estado actual</th><th>Acción</th><th>Nuevo estado</th></tr>
+  <tr><td>Pendiente</td><td>Iniciar</td><td>En proceso</td></tr>
+  <tr><td>En proceso</td><td>Enviar a revisión</td><td>Revisión</td></tr>
+  <tr><td>Revisión</td><td>Marcar listo</td><td>Listo</td></tr>
+  <tr><td>Revisión</td><td>Rechazar; registrar un motivo si corresponde</td><td>En proceso</td></tr>
+  <tr><td>Listo</td><td>Sin transición posterior en esta versión</td><td>Listo</td></tr>
+</table>
+<p>El motivo de rechazo es opcional y admite hasta 300 caracteres. Para consultar los movimientos, despliegue <strong>Historial de cambios</strong> en la tarjeta. Se muestran fecha, origen, destino y motivo registrado.</p>
+<blockquote><strong>Cómo leer el avance.</strong> Un pedido de 250 unidades con solo el paquete de 50 terminado tiene un avance de <strong>20 %</strong>. Completar uno de tres paquetes no implica necesariamente 33,3 %: el cálculo utiliza unidades.</blockquote>
+<p>Si otra solicitud cambia el paquete antes de guardar, la operación se rechaza por conflicto. Actualice el detalle y revise su estado antes de intentar nuevamente.</p>
+<p align="center"><img src="docs/capturas/manual-detalle.png" alt="Detalle de pedido con avance ponderado y tarjetas de paquetes por estado" width="100%"><br><em>Figura 4. Seguimiento individual de un pedido existente.</em></p>
 
-- Registro de pedidos con número único, cliente y cantidad entera positiva.
-- División automática: 250 unidades generan paquetes de **100 + 100 + 50**.
-- Flujo por paquete: **Pendiente → En proceso → Revisión → Listo**.
-- Rechazo desde Revisión hacia En proceso, con motivo opcional e historial persistente.
-- Conteos por estado y avance ponderado por **unidades listas**, no por número de paquetes.
-- Búsqueda literal por número o cliente, filtros, paginación y resumen global de producción.
-- [Estadísticas operativas](https://seguimiento-pedidos-tata.onrender.com/estadisticas) con períodos de 7, 30 y 90 días: entradas, producción, estados, clientes y calidad.
-- Exportación CSV de la página visible, con protección contra fórmulas en campos de texto.
-- Interfaz en español, adaptable a móvil y con navegación por teclado.
-- Control de concurrencia para evitar dobles avances y transiciones sobre datos obsoletos.
+<h2 id="estadisticas">05 · Estadísticas e indicadores</h2>
+<p>Ingrese a <strong>Estadísticas</strong> y seleccione los últimos 7, 30 o 90 días. Los valores se calculan desde MongoDB al consultar; las capturas representan un momento de la demostración.</p>
+<table>
+  <tr><th>Indicador</th><th>Definición operativa</th></tr>
+  <tr><td>Cartera del período</td><td>Pedidos creados en las fechas seleccionadas, con su estado actual.</td></tr>
+  <tr><td>Avance de cartera</td><td>Unidades listas de esa cartera divididas entre sus unidades totales.</td></tr>
+  <tr><td>Unidades terminadas</td><td>Unidades de paquetes que llegaron a Listo dentro del período, aunque el pedido se haya creado antes.</td></tr>
+  <tr><td>Tasa de rechazo</td><td>Rechazos divididos entre revisiones resueltas: aprobaciones más rechazos.</td></tr>
+  <tr><td>Tiempo medio</td><td>Horas desde el primer inicio hasta Listo, para los paquetes terminados en el período; incluye ciclos de rechazo.</td></tr>
+  <tr><td>Volumen por cliente</td><td>Unidades recibidas en pedidos de la cartera; se muestran hasta ocho clientes.</td></tr>
+</table>
+<p>El gráfico compara entradas y terminaciones por día. <strong>Consultar datos diarios del gráfico</strong> ofrece una alternativa tabular. Cuando no existe una muestra para el tiempo medio, la API devuelve <code>null</code>; no se interpreta como duración cero.</p>
+<p align="center"><img src="docs/capturas/manual-estadisticas.png" alt="Estadísticas con selector de período, indicadores y gráfico de unidades recibidas y terminadas" width="100%"><br><em>Figura 5. Análisis de cartera y actividad del período.</em></p>
 
-## Ejecutar localmente
+<h2 id="alertas">06 · Alertas y resumen operativo</h2>
+<table>
+  <tr><th>Alerta</th><th>Criterio</th><th>Seguimiento sugerido</th></tr>
+  <tr><td>Revisión requiere seguimiento</td><td>Paquete en Revisión con al menos 72 horas sin movimiento.</td><td>Consultar a control de calidad y resolver la revisión.</td></tr>
+  <tr><td>Pedido sin movimiento</td><td>Pedido abierto sin actualización durante al menos 120 horas.</td><td>Confirmar su planificación y el siguiente paso.</td></tr>
+  <tr><td>Rechazos repetidos</td><td>Paquete abierto con dos o más devoluciones a producción.</td><td>Examinar los motivos y corregir la causa registrada.</td></tr>
+</table>
+<p>Las alertas pueden coincidir en un pedido. Se excluyen los pedidos completamente terminados y los paquetes listos. Se presentan hasta 50 alertas por filtro con el total correspondiente. Los umbrales orientan el seguimiento; no certifican incumplimientos de entrega.</p>
+<h3>6.1 Generar un resumen</h3>
+<ol>
+  <li>Abra <strong>Alertas</strong> y elija un período de 7, 30 o 90 días.</li>
+  <li>Pulse <strong>Generar resumen</strong>.</li>
+  <li>Revise los indicadores, las prioridades y su evidencia.</li>
+  <li>Abra el enlace del pedido para analizar el caso y decidir una acción.</li>
+</ol>
+<table>
+  <tr><th>Modalidad</th><th>Estado de la entrega</th><th>Comportamiento</th></tr>
+  <tr><td>Reglas de seguimiento</td><td><strong>Activa, sin clave de proveedor</strong></td><td>Combina métricas calculadas y alertas; identifica explícitamente su origen.</td></tr>
+  <tr><td>IA generativa · Gemini</td><td><strong>Opcional, desactivada sin clave</strong></td><td>Cliente REST implementado y probado contra simulación. No se ha verificado una llamada real a Google.</td></tr>
+</table>
+<p>La integración opcional comparte solicitudes simultáneas, conserva resultados válidos cinco minutos y limita intentos diarios por proceso. Ante cuota agotada, error, tiempo de espera o referencias inválidas, muestra el resumen por reglas. No dispone de herramientas para modificar pedidos. Consulte <a href="docs/operacion.md">la configuración y los límites de la integración</a>.</p>
+<p align="center"><img src="docs/capturas/manual-alertas.png" alt="Alertas operativas y resumen gratuito identificado como Reglas de seguimiento" width="100%"><br><em>Figura 6. Evidencia y prioridades del seguimiento operativo.</em></p>
 
-Requisitos: Node.js **24.15+ de la rama 24**, npm y Docker o MongoDB disponible.
+<h2 id="manual-tecnico">07 · Manual técnico: arquitectura y tecnologías</h2>
+<h3>7.1 Organización del sistema</h3>
+<p>La solución utiliza un monorepositorio con npm workspaces. Angular implementa la presentación; Express expone operaciones HTTP; el dominio valida reglas y calcula resultados; Mongoose define documentos e índices de MongoDB. En producción, Express sirve también los archivos Angular compilados, por lo que la interfaz y la API comparten origen.</p>
+<p align="center"><img src="docs/diagramas/arquitectura.svg" alt="Diagrama de presentación Angular, API Express, persistencia MongoDB y Gemini opcional" width="100%"><br><em>Figura 7. Componentes y responsabilidades.</em></p>
+<h3>7.2 Especificaciones tecnológicas</h3>
+<p>Las versiones de paquetes corresponden a <a href="package-lock.json">package-lock.json</a> en esta edición. La rama de Node requerida está definida en <a href="package.json">package.json</a>; la imagen de MongoDB local está en <a href="compose.yaml">compose.yaml</a>.</p>
+<table>
+  <tr><th>Tecnología</th><th>Versión / configuración</th><th>Aplicación en el proyecto</th></tr>
+  <tr><td>Angular / Angular CLI</td><td>22.2.4 / 22.2.5</td><td>Componentes standalone, signals, formularios, Router y HttpClient.</td></tr>
+  <tr><td>TypeScript</td><td>6.0.3 · tipado estricto</td><td>Tipos compartidos conceptualmente entre contratos, dominio e interfaz.</td></tr>
+  <tr><td>Node.js</td><td>Rama 24, desde 24.15.0</td><td>Ejecución de API, herramientas de compilación y pruebas.</td></tr>
+  <tr><td>Express</td><td>5.3.0</td><td>Rutas REST, validación HTTP, errores y entrega del frontend.</td></tr>
+  <tr><td>MongoDB</td><td>Imagen local 8.0 · Atlas en publicación</td><td>Persistencia documental de pedidos, paquetes e historial.</td></tr>
+  <tr><td>Mongoose</td><td>9.11.4</td><td>Esquemas, validaciones, índices y consultas de persistencia.</td></tr>
+  <tr><td>RxJS</td><td>7.8.2</td><td>Solicitudes HTTP, límites de espera y ciclo de vida de suscripciones.</td></tr>
+  <tr><td>Helmet</td><td>8.3.0</td><td>Cabeceras HTTP de seguridad y política de contenido.</td></tr>
+  <tr><td>SCSS / Jost</td><td>Estilos propios / @fontsource 5.3.0</td><td>Diseño adaptable y tipografía servida localmente.</td></tr>
+  <tr><td>Vitest / Supertest</td><td>5.0.5 / 7.3.1</td><td>Prueba del marco Angular y verificaciones HTTP de integración.</td></tr>
+  <tr><td>Playwright</td><td>1.64.1</td><td>Recorridos reales de navegador y comprobaciones móviles.</td></tr>
+  <tr><td>Docker / Render</td><td>MongoDB local / servicio web Node</td><td>Entorno reproducible de datos y publicación de la aplicación.</td></tr>
+</table>
+<h3>7.3 Estructura del repositorio</h3>
+<pre><code>seguimiento-pedidos/
+├── apps/
+│   ├── api/
+│   │   ├── src/dominio/          Reglas, validaciones y transiciones
+│   │   ├── src/pedidos/          Modelo y rutas de pedidos
+│   │   ├── src/estadisticas/     Cálculo de indicadores
+│   │   ├── src/operacion/        Alertas, resumen y cliente Gemini
+│   │   ├── scripts/             Carga de operación sintética
+│   │   └── test/                Dominio, integración y simulación
+│   └── web/src/app/
+│       ├── pedidos/             Listado, detalle y formularios
+│       ├── estadisticas/        Indicadores y gráficos
+│       ├── operacion/           Alertas y asistente operativo
+│       └── guia/                Recorrido interactivo
+├── docs/                        Especificaciones, contrato y manual
+├── postman/                     Contrato y simulación de Gemini
+├── pruebas/interfaz/            Recorridos Playwright
+├── scripts/                     Datos de ejemplo y generación del manual
+└── compose.yaml                 MongoDB persistente para desarrollo</code></pre>
 
-```sh
-git clone https://github.com/RSGarcia2002/seguimiento-pedidos.git
+<h2 id="metodologia">08 · Metodología y decisiones de diseño</h2>
+<p>Se empleó <strong>desarrollo guiado por especificaciones (SDD)</strong>, con implementación incremental y apoyo de Codex. Las reglas y el contrato se documentan antes de modificar comportamientos. La aceptación se comprueba mediante pruebas de dominio, integración, navegador y verificación pública.</p>
+<table>
+  <tr><th>Etapa</th><th>Aplicación</th><th>Evidencia</th></tr>
+  <tr><td>Especificación</td><td>Objetivo, reglas, límites y criterios de aceptación.</td><td><a href="docs/spec.md">spec.md</a></td></tr>
+  <tr><td>Contrato</td><td>Operaciones, parámetros, respuestas y errores de la API.</td><td><a href="docs/openapi.json">OpenAPI 3.0.3</a></td></tr>
+  <tr><td>Implementación incremental</td><td>Dominio, persistencia, interfaz y ampliaciones operativas.</td><td>Directorios <code>apps/</code> y control de versiones Git.</td></tr>
+  <tr><td>Verificación por capas</td><td>Reglas puras, MongoDB real, recorridos HTTP y navegador.</td><td><code>apps/api/test/</code> y <code>pruebas/interfaz/</code></td></tr>
+  <tr><td>Registro de decisiones</td><td>Incidencias, correcciones y comprobación de despliegues.</td><td><a href="docs/agent-log.md">Bitácora del desarrollo</a></td></tr>
+</table>
+<h3>Decisiones de ingeniería</h3>
+<ul>
+  <li><strong>Separación de responsabilidades:</strong> reglas de negocio independientes de rutas y presentación.</li>
+  <li><strong>Máquina de estados:</strong> transiciones explícitas para impedir saltos de producción.</li>
+  <li><strong>Concurrencia optimista:</strong> comparación de estado y versión dentro de una escritura atómica.</li>
+  <li><strong>Valores derivados:</strong> avance y estado del pedido calculados desde sus paquetes.</li>
+  <li><strong>Documentos embebidos:</strong> pedido, paquetes e historial se consultan y actualizan conjuntamente.</li>
+  <li><strong>Datos reproducibles:</strong> generación determinista, lote identificado y carga idempotente.</li>
+</ul>
+<p><strong>Incidencia documentada:</strong> la inferencia inicial de los nombres de timestamps de Mongoose provocó errores de tipos. Se corrigió usando literales con <code>as const</code>, conservando TypeScript estricto. La bitácora registra la corrección y sus comprobaciones.</p>
+
+<h2 id="datos">09 · Modelo de datos y reglas de negocio</h2>
+<table>
+  <tr><th>Entidad</th><th>Campos principales</th><th>Reglas</th></tr>
+  <tr><td>Pedido</td><td><code>numero</code>, <code>cliente</code>, <code>cantidad</code>, <code>paquetes</code>, fechas y procedencia.</td><td>Número único normalizado; cantidad entera de 1 a 100 000.</td></tr>
+  <tr><td>Paquete embebido</td><td><code>numero</code>, <code>unidades</code>, <code>estado</code>, <code>version</code>, <code>historial</code>.</td><td>De 1 a 100 unidades; estado inicial pendiente; versión incrementada por transición.</td></tr>
+  <tr><td>Evento embebido</td><td><code>fecha</code>, <code>origen</code>, <code>destino</code>, <code>motivo</code>.</td><td>Se guarda junto con el cambio de estado. Motivo de hasta 300 caracteres.</td></tr>
+</table>
+<p>El índice único de <code>numero</code> resuelve también creaciones simultáneas. Existen índices por fecha de creación y fecha del historial. Las fechas se almacenan como instantes; filtros e indicadores aplican el calendario de Guatemala.</p>
+<pre><code>paquetes completos = parte entera de (cantidad / 100)
+remanente          = cantidad % 100
+avance (%)         = unidades de paquetes Listos / cantidad × 100
+
+Ejemplo: 250 unidades → [100, 100, 50]
+Solo 50 unidades listas → 50 / 250 × 100 = 20 %</code></pre>
+<table>
+  <tr><th>Restricción</th><th>Valor</th></tr>
+  <tr><td>Número de pedido / nombre del cliente</td><td>1–50 / 1–120 caracteres, sin espacios externos.</td></tr>
+  <tr><td>Cantidad / paquetes por pedido</td><td>1–100 000 unidades / hasta 1000 paquetes.</td></tr>
+  <tr><td>Búsqueda / paginación</td><td>Hasta 80 caracteres / 12 filas predeterminadas, máximo 100 por consulta.</td></tr>
+  <tr><td>Cuerpo JSON de la API</td><td>Hasta 32 KB por solicitud.</td></tr>
+</table>
+<h3>Datos de demostración</h3>
+<p>La muestra inicial publicada reúne cuatro pedidos <code>DEMO-*</code> y un lote de 96 pedidos sintéticos, con ocho clientes ficticios y 90 días de actividad. Las fechas, versiones, cantidades y transiciones del lote son coherentes. Los datos no representan operaciones comerciales reales.</p>
+<p>La carga ampliada es aditiva e idempotente: conserva pedidos existentes y repetirla no duplica el lote. El total puede cambiar con el uso posterior de la aplicación. Consulte <a href="docs/datos-demostracion.md">procedencia y definición de métricas</a>.</p>
+
+<h2 id="instalacion">10 · Instalación y configuración local</h2>
+<h3>10.1 Requisitos</h3>
+<table>
+  <tr><th>Recurso</th><th>Requisito</th></tr>
+  <tr><td>Node.js</td><td>Rama 24, versión 24.15.0 o superior dentro de esa rama.</td></tr>
+  <tr><td>Herramientas</td><td>npm y Git; Docker con Compose o un servidor MongoDB disponible.</td></tr>
+  <tr><td>Navegador de pruebas</td><td>Chromium de Playwright o Chrome instalado.</td></tr>
+  <tr><td>Puertos locales</td><td>4200: Angular; 3000: API; 27019: MongoDB; 3100: API de pruebas E2E.</td></tr>
+</table>
+<h3>10.2 Obtener el código e instalar dependencias</h3>
+<pre><code>git clone https://github.com/RSGarcia2002/seguimiento-pedidos.git
 cd seguimiento-pedidos
 npm ci
-cp apps/api/.env.example apps/api/.env
-```
-
-Inicia MongoDB con volumen persistente:
-
-```sh
-docker compose up -d --wait
-```
-
-Si tu instalación no tiene Docker Compose, esta alternativa usa el mismo puerto de conexión:
-
-```sh
-docker run -d --name seguimiento-pedidos-mongo \
+cp apps/api/.env.example apps/api/.env</code></pre>
+<h3>10.3 Iniciar MongoDB</h3>
+<pre><code>docker compose up -d --wait</code></pre>
+<p>Compose conserva los datos en el volumen <code>datos_mongo</code>. Si Docker Compose no está disponible, utilice esta alternativa; no ejecute ambas en el mismo puerto:</p>
+<pre><code>docker run -d --name seguimiento-pedidos-mongo \
   --publish 127.0.0.1:27019:27017 \
   --volume seguimiento-pedidos-datos:/data/db mongo:8.0
-```
 
-En ejecuciones posteriores, si el contenedor ya existe: `docker start seguimiento-pedidos-mongo`.
-La URI de ejemplo es `mongodb://127.0.0.1:27019/seguimiento_pedidos`.
-Para usar otra base, cambia `MONGODB_URI` en `apps/api/.env`.
-La instalación del autor ya utiliza Atlas mediante un archivo ignorado por Git; la URI de ejemplo continúa apuntando a Docker para que el proyecto sea reproducible sin compartir credenciales.
-
-```sh
-npm run dev
-```
-
-- Interfaz: [http://localhost:4200](http://localhost:4200).
-- Salud de la API: [http://localhost:3000/api/salud](http://localhost:3000/api/salud).
-- Angular redirige `/api` al backend durante el desarrollo.
-
-Si solo tienes Node 25 global y no quieres cambiarlo, puedes anteponer a los comandos npm:
-
-```sh
-npm exec --yes --package=node@24 -- npm run dev
-```
-
-Los datos se conservan en el volumen de Docker. Detener o reiniciar el contenedor no los elimina.
-
-## Datos de demostración
-
-Con la API funcionando, ejecuta opcionalmente:
-
-```sh
+# En ejecuciones posteriores, si el contenedor ya existe:
+docker start seguimiento-pedidos-mongo</code></pre>
+<h3>10.4 Configurar variables e iniciar</h3>
+<table>
+  <tr><th>Variable</th><th>Uso</th><th>Valor local de ejemplo</th></tr>
+  <tr><td><code>PORT</code></td><td>Puerto de la API.</td><td><code>3000</code></td></tr>
+  <tr><td><code>MONGODB_URI</code></td><td>Conexión obligatoria del servidor.</td><td><code>mongodb://127.0.0.1:27019/seguimiento_pedidos</code></td></tr>
+  <tr><td><code>NODE_ENV</code></td><td>Modo de ejecución en publicación.</td><td><code>production</code> en Render.</td></tr>
+  <tr><td><code>GEMINI_API_KEY</code></td><td>Secreto opcional para activar IA generativa.</td><td>Sin configurar; el resumen funciona por reglas.</td></tr>
+  <tr><td><code>GEMINI_MODEL</code></td><td>Modelo del cliente opcional.</td><td><code>gemini-3.1-flash-lite</code></td></tr>
+</table>
+<pre><code>npm run dev</code></pre>
+<p>Abra <a href="http://localhost:4200">http://localhost:4200</a>. La salud de la API está en <a href="http://localhost:3000/api/salud">http://localhost:3000/api/salud</a>. El proxy de Angular redirige <code>/api</code> al backend.</p>
+<p>Para ejecutar temporalmente con Node 24 cuando la instalación global usa otra rama:</p>
+<pre><code>npm exec --yes --package=node@24 -- npm run dev</code></pre>
+<h3>10.5 Cargar ejemplos y compilar</h3>
+<pre><code># Cuatro pedidos de ejemplo; requiere la API en ejecución.
 npm run datos:ejemplo
-```
 
-Crea cuatro pedidos `DEMO-*` mediante la API real, con distintos estados y avances. No modifica ejemplos existentes ni los carga automáticamente en producción. Todos los clientes de estos pedidos se identifican como demostración.
-
-
-### Operación de demostración ampliada
-
-```sh
+# Lote de 96 pedidos; usa la conexión de apps/api/.env.
 npm run datos:operacion
-```
 
-Carga un lote de **96 pedidos sintéticos**, ocho clientes ficticios y 90 días de actividad.
-Cada paquete mantiene cantidades, fechas, estados, versiones y rechazos coherentes.
-El lote se identifica con `origenDatos=sintetico`; la interfaz indica que es un entorno de demostración.
-La carga es aditiva: no reemplaza pedidos existentes y repetirla no agrega duplicados.
-En Atlas quedó una muestra inicial de **100 pedidos**: 96 nuevos y los cuatro ejemplos anteriores.
+# Compilación de producción e inicio en un solo origen.
+npm run build
+npm start</code></pre>
+<p>Verifique la conexión seleccionada antes de cargar datos. Para una instalación propia use sus variables; los archivos <code>.env</code> y sus credenciales se mantienen fuera de Git.</p>
 
-Consulta [la descripción de los datos y métricas](docs/datos-demostracion.md) para reproducirla.
-Las estadísticas se consultan desde MongoDB, no son valores fijos en la interfaz.
+<h2 id="api">11 · Contrato de la API</h2>
+<p>Base local: <code>http://localhost:3000</code>. Las solicitudes y respuestas de negocio utilizan JSON. El contrato completo se encuentra en <a href="docs/openapi.json">docs/openapi.json</a>.</p>
+<table>
+  <tr><th>Método</th><th>Ruta</th><th>Operación</th></tr>
+  <tr><td>GET</td><td><code>/api/salud</code></td><td>Disponibilidad de API y conexión MongoDB.</td></tr>
+  <tr><td>GET</td><td><code>/api/pedidos</code></td><td>Listado, filtros, paginación y resumen global.</td></tr>
+  <tr><td>POST</td><td><code>/api/pedidos</code></td><td>Crear pedido y paquetes.</td></tr>
+  <tr><td>GET</td><td><code>/api/pedidos/:id</code></td><td>Detalle y movimientos.</td></tr>
+  <tr><td>POST</td><td><code>/api/pedidos/:id/paquetes/:paqueteId/transiciones</code></td><td>Avanzar o rechazar con estado y versión esperados.</td></tr>
+  <tr><td>GET</td><td><code>/api/estadisticas?dias=30</code></td><td>Cartera, actividad, clientes y calidad.</td></tr>
+  <tr><td>GET</td><td><code>/api/operacion/alertas?tipo=todos</code></td><td>Alertas calculadas y umbrales.</td></tr>
+  <tr><td>POST</td><td><code>/api/operacion/analisis</code></td><td>Resumen de consulta; cuerpo <code>{"dias":30}</code>.</td></tr>
+</table>
+<p><strong>Filtros de pedidos:</strong> <code>busqueda</code>, <code>estado</code>, <code>cliente</code>, <code>desde</code>, <code>hasta</code>, <code>orden</code>, <code>pagina</code> y <code>limite</code>. El orden se aplica antes de paginar.</p>
+<h3>Ejemplo de creación local</h3>
+<pre><code>curl -X POST http://localhost:3000/api/pedidos \
+  -H 'Content-Type: application/json' \
+  -d '{"numero":"PRUEBA-250","cliente":"Cliente de demostración","cantidad":250}'</code></pre>
+<h3>Cuerpo de una transición</h3>
+<pre><code>{
+  "accion": "avanzar",
+  "estadoActual": "pendiente",
+  "versionActual": 0,
+  "motivo": ""
+}</code></pre>
+<p>Los identificadores se obtienen del detalle. Use la versión y el estado vigentes; no reutilice los valores del ejemplo después de una transición.</p>
+<table>
+  <tr><th>HTTP</th><th>Significado</th></tr>
+  <tr><td>200 / 201</td><td>Consulta o cambio correcto / creación de pedido.</td></tr>
+  <tr><td>400</td><td>Entrada, fecha, filtro o transición no válidos.</td></tr>
+  <tr><td>404</td><td>Pedido, paquete o ruta inexistentes.</td></tr>
+  <tr><td>409</td><td>Número duplicado o conflicto de estado y versión.</td></tr>
+  <tr><td>413</td><td>El JSON recibido excede el límite configurado.</td></tr>
+  <tr><td>500 / 503</td><td>Error interno / salud degradada por desconexión de MongoDB.</td></tr>
+</table>
+<pre><code>{ "error": { "codigo": "NUMERO_DUPLICADO", "mensaje": "Ya existe un pedido con ese número." } }</code></pre>
 
-## Pruebas y compilación
-
-Con MongoDB local disponible en el puerto 27019:
-
-```sh
-npm run typecheck
+<h2 id="verificacion">12 · Pruebas y trazabilidad</h2>
+<h3>12.1 Ejecutar las comprobaciones</h3>
+<p>Inicie MongoDB local en el puerto 27019 y ejecute desde la raíz:</p>
+<pre><code>npm run typecheck
 npm test
 npm run build
 npx playwright install chromium
 npm run test:e2e
-```
 
-En macOS, puedes usar Chrome instalado sin descargar otro navegador:
+# Alternativa con Chrome instalado:
+PLAYWRIGHT_CHANNEL=chrome npm run test:e2e</code></pre>
+<table>
+  <tr><th>Nivel</th><th>Qué se comprueba</th><th>Aislamiento</th></tr>
+  <tr><td>Dominio y cálculos</td><td>Partición, límites, avance, transiciones, datos sintéticos, métricas y umbrales.</td><td>Funciones sin escrituras externas.</td></tr>
+  <tr><td>Integración HTTP + MongoDB</td><td>Creación, índices, persistencia, concurrencia, filtros, alertas y resumen.</td><td>Base aleatoria propia por ejecución; se elimina al terminar.</td></tr>
+  <tr><td>Interfaz Angular</td><td>Identidad y estructura básica de la aplicación.</td><td>Entorno de pruebas Vitest.</td></tr>
+  <tr><td>Navegador E2E</td><td>Flujo de pedido, rechazo, 20 % de avance, CSV, estadísticas y recorrido guiado.</td><td>API en 3100 y base <code>seguimiento_e2e</code>; elimina sus registros.</td></tr>
+  <tr><td>Proveedor simulado</td><td>Respuesta válida, caché, cuota, error, timeout, referencias y límite diario.</td><td>Postman local, sin claves reales ni llamadas a Google.</td></tr>
+</table>
+<p><strong>Última evidencia registrada:</strong> compilación aprobada, 41 comprobaciones backend, una prueba Angular, dos recorridos E2E y seis pruebas de integración simulada. Estos resultados describen las ejecuciones documentadas, no una medición de cobertura porcentual.</p>
+<p>La integración usa <code>TEST_MONGODB_URI</code> para elegir otro servidor de pruebas. La configuración E2E fija su conexión local. La simulación opcional se reproduce con los comandos de <a href="docs/operacion.md">docs/operacion.md</a>.</p>
+<h3>12.2 Matriz de trazabilidad resumida</h3>
+<table>
+  <tr><th>Requisito</th><th>Implementación</th><th>Verificación</th></tr>
+  <tr><td>Partición exacta y límites</td><td><code>src/dominio/pedidos.ts</code></td><td><code>apps/api/test/dominio.test.ts</code></td></tr>
+  <tr><td>Unicidad y concurrencia</td><td>Índice único, estado y versión esperados.</td><td><code>apps/api/test/integracion.test.ts</code></td></tr>
+  <tr><td>Estadísticas coherentes</td><td><code>src/estadisticas/calculo.ts</code></td><td><code>apps/api/test/estadisticas.test.ts</code></td></tr>
+  <tr><td>Alertas y alternativa gratuita</td><td><code>src/operacion/</code></td><td><code>alertas.test.ts</code> y <code>ia.simulacion.ts</code></td></tr>
+  <tr><td>Operación desde navegador</td><td>Panel de pedidos y secciones de análisis.</td><td><code>pruebas/interfaz/pedidos.spec.ts</code></td></tr>
+  <tr><td>Guía sin cambios de datos</td><td><code>apps/web/src/app/guia/</code></td><td><code>pruebas/interfaz/guia.spec.ts</code></td></tr>
+</table>
+<p><strong>Integración continua:</strong> la plantilla <a href="docs/ci/verificacion-github.yml">verificacion-github.yml</a> está preparada, pero GitHub Actions no está activado. Su habilitación requiere colocarla en <code>.github/workflows/</code> con una credencial que tenga permiso <code>workflow</code>.</p>
 
-```sh
-PLAYWRIGHT_CHANNEL=chrome npm run test:e2e
-```
+<h2 id="despliegue">13 · Despliegue, seguridad y mantenimiento</h2>
+<h3>13.1 Publicación en Render</h3>
+<table>
+  <tr><th>Parámetro</th><th>Configuración implementada</th></tr>
+  <tr><td>Servicio</td><td>Aplicación web Node; API y Angular en el mismo origen.</td></tr>
+  <tr><td>Rama</td><td><code>main</code>, con despliegue automático al publicar cambios de aplicación.</td></tr>
+  <tr><td>Compilación</td><td><code>npm ci --include=dev &amp;&amp; npm run build</code></td></tr>
+  <tr><td>Inicio</td><td><code>node apps/api/dist/servidor.js</code></td></tr>
+  <tr><td>Variables</td><td><code>NODE_VERSION=24</code>, <code>NODE_ENV=production</code> y <code>MONGODB_URI</code> como secreto.</td></tr>
+  <tr><td>Disponibilidad</td><td><code>/api/salud</code>; Render proporciona <code>PORT</code>.</td></tr>
+</table>
+<p>En Atlas se autorizan los rangos de salida del servicio. El servidor inicia después de conectar a MongoDB y preparar los índices. Ante SIGTERM o SIGINT deja terminar solicitudes, cierra la conexión y limita el tiempo de apagado.</p>
+<h3>13.2 Controles implementados</h3>
+<ul>
+  <li>Validación de cantidades, longitudes, fechas, identificadores y transiciones en el servidor.</li>
+  <li>Índice único y escritura atómica de estado, versión e historial.</li>
+  <li>Cabeceras Helmet, límite JSON y mensajes de error sin credenciales.</li>
+  <li>Búsqueda literal con metacaracteres escapados y protección de campos CSV contra fórmulas.</li>
+  <li>Archivos de secretos excluidos de Git; frontend sin claves de proveedores.</li>
+  <li>Tipografía local y CSS de producción compatible con la política de seguridad.</li>
+</ul>
+<p><strong>Límite operativo:</strong> no hay autenticación ni autorización; cualquier visitante puede utilizar las acciones públicas. El historial registra movimientos, pero no identifica un operador. Esta edición utiliza datos sintéticos y no incluye una política automática de copias de seguridad.</p>
+<h3>13.3 Mantenimiento y documentación</h3>
+<p>Antes de cambiar una regla, actualice la especificación y el contrato cuando corresponda. Ejecute las pruebas relacionadas, compruebe el despliegue hasta estado activo y revise su comportamiento público. Mantenga el código propio y los comentarios en español.</p>
+<p>El README es la fuente de la edición HTML. Para regenerar el manual tras editarlo:</p>
+<pre><code>npm run docs:manual</code></pre>
+<p>Abra <code>docs/manual/index.html</code> en el navegador. La edición conserva las imágenes localmente, incluye navegación y estilos de impresión. Para imprimir o guardar desde el navegador, utilice <strong>Ctrl+P</strong> o <strong>⌘+P</strong>.</p>
 
-- **Dominio:** partición, límites, entradas inválidas, avance por unidades y transiciones.
-- **Integración real:** API y MongoDB; duplicados normalizados, condiciones de carrera, rechazos, motivos, búsquedas, filtros y persistencia tras reconectar.
-- **Interfaz:** crea 250 unidades, rechaza y completa el paquete de 50, comprueba el 20% tras recargar, consulta historial, busca, exporta CSV y verifica un duplicado y anchos móviles.
-- Las pruebas de integración usan una base con nombre aleatorio y eliminan exclusivamente esa base. `TEST_MONGODB_URI` permite indicar un servidor alternativo.
-- Las pruebas de navegador usan `seguimiento_e2e`, un puerto API separado (3100) y borran el registro específico creado por la ejecución.
-- La plantilla `docs/ci/verificacion-github.yml` reproduce las verificaciones con MongoDB 8 y Chromium. Para activarla, colócala en `.github/workflows/verificacion.yml` usando una credencial con permiso `workflow`.
+<h2 id="problemas">14 · Solución de problemas</h2>
+<table>
+  <tr><th>Situación</th><th>Causa probable</th><th>Acción</th></tr>
+  <tr><td>La aplicación pública tarda en abrir.</td><td>Reactivación del servicio gratuito.</td><td>Espere y vuelva a consultar; compruebe <code>/api/salud</code>.</td></tr>
+  <tr><td>La API no inicia o informa desconexión.</td><td>MongoDB detenido, URI incorrecta o acceso de red restringido.</td><td>Revise contenedor, variables y lista de acceso de Atlas sin compartir secretos.</td></tr>
+  <tr><td>No se puede registrar el pedido.</td><td>Datos fuera de límites o número duplicado.</td><td>Revise el mensaje, cantidad entera y número normalizado.</td></tr>
+  <tr><td>Un paquete no permite avanzar.</td><td>Estado final, transición no permitida o versión obsoleta.</td><td>Actualice el detalle y utilice la acción disponible para el estado actual.</td></tr>
+  <tr><td>El porcentaje parece diferente al conteo de paquetes.</td><td>Los paquetes tienen cantidades distintas.</td><td>Calcule unidades listas / unidades totales; consulte el ejemplo 50/250.</td></tr>
+  <tr><td>Estadísticas y listado muestran totales distintos.</td><td>Cartera temporal frente a resumen global.</td><td>Revise período, fecha de creación y diferencia entre cartera y actividad.</td></tr>
+  <tr><td>El resumen indica «Reglas de seguimiento».</td><td>Modalidad actual o alternativa por indisponibilidad del proveedor.</td><td>Puede seguir usándolo; consulte el aviso sobre la modalidad.</td></tr>
+  <tr><td>No reaparece la bienvenida.</td><td>La preferencia quedó guardada en el navegador.</td><td>Pulse <strong>Guía paso a paso</strong> en el encabezado.</td></tr>
+  <tr><td>Playwright no encuentra navegador.</td><td>Chromium no instalado.</td><td>Ejecute <code>npx playwright install chromium</code> o use Chrome con <code>PLAYWRIGHT_CHANNEL=chrome</code>.</td></tr>
+</table>
 
-## Arquitectura y decisiones
-
-```text
-Navegador → Angular → API Express → MongoDB
-                        ↓
-               reglas de dominio
-```
-
-Los pedidos guardan sus paquetes embebidos en un documento MongoDB. La creación es una sola inserción y el número tiene un índice único. Cada transición compara **estado y versión** del paquete dentro de una escritura atómica que guarda el nuevo estado y el historial. La versión impide reutilizar una solicitud antigua después de un ciclo de rechazo y revisión.
-
-El porcentaje se deriva de las unidades de paquetes listos: un paquete de 50 completado en un pedido de 250 representa **20%**. No se guarda un porcentaje independiente que pueda quedar desactualizado.
-
-- `apps/web`: interfaz Angular standalone, formularios y servicio HTTP.
-- `apps/api`: API Express, dominio, modelos Mongoose y pruebas.
-- `docs/spec.md`: especificación y criterios definidos antes de implementar.
-- `docs/openapi.json`: contrato OpenAPI de las operaciones públicas.
-- `docs/plan.md`: avance y verificaciones.
-- `docs/agent-log.md`: decisiones, incidencias y correcciones del agente.
-- `docs/diseno.md`: adaptación visual de [TATA Accesorios Globales](https://tataaccessories.org/es).
-
-La tipografía Jost se sirve localmente. La marca textual es una aproximación tipográfica, no el archivo de logotipo original.
-
-## API
-
-| Método | Ruta | Función |
-| --- | --- | --- |
-| GET | `/api/estadisticas?dias=30` | Métricas de cartera, actividad y calidad |
-| GET | `/api/salud` | Disponibilidad de API y conexión |
-| GET | `/api/pedidos` | Listado, filtros y resumen global |
-| POST | `/api/pedidos` | Crear pedido y paquetes |
-| GET | `/api/pedidos/:id` | Detalle e historial |
-| POST | `/api/pedidos/:id/paquetes/:paqueteId/transiciones` | Avanzar o rechazar |
-
-Las transiciones reciben `accion`, `estadoActual`, `versionActual` y un `motivo` opcional. Un conflicto devuelve HTTP 409; los datos inválidos devuelven 400. El contrato completo, ejemplos y esquemas están en `docs/openapi.json`.
-
-## SDD y uso de IA
-
-Se siguió la secuencia **especificación → contrato → implementación → verificación**. Codex apoyó la preparación, programación, documentación y pruebas. Las decisiones y criterios están versionados en `docs/`.
-
-### Error real del agente y corrección
-
-Al configurar las fechas automáticas de Mongoose con nombres en español, la inferencia de TypeScript interpretó sus nombres como cadenas abiertas y generó una firma de índice incorrecta de tipo `Date`. La compilación falló al crear y presentar pedidos.
-
-Se corrigió declarando los nombres de las fechas como literales con `as const`, sin quitar el tipado estricto ni introducir `any`. Después pasaron la compilación y las pruebas de integración con MongoDB real, incluidas creación, transiciones y reconexión. Más detalles en `docs/agent-log.md`.
-
-## Publicación en Render
-
-Una sola aplicación Node sirve `/api` y los archivos Angular compilados; no necesita CORS abierto ni una URL de API expuesta en el frontend.
-
-| Configuración | Valor |
-| --- | --- |
-| Runtime | Node |
-| Rama | `main` |
-| Build | `npm ci --include=dev && npm run build` |
-| Inicio | `node apps/api/dist/servidor.js` |
-| Node | `NODE_VERSION=24` |
-| Entorno | `NODE_ENV=production` |
-| Conexión | `MONGODB_URI` como secreto con URI de Atlas |
-| Salud | `/api/salud` |
-
-Render proporciona `PORT`; el servidor escucha conexiones externas y cierra de forma ordenada ante SIGTERM. En Atlas deben autorizarse las direcciones de salida del servicio Render. La URI no se incluye en el repositorio ni en los logs.
-
-## Alcance y límites
-
-Esta es una aplicación de demostración para evaluación técnica, con datos de ejemplo y sin autenticación o separación por usuarios. No se implementan edición o eliminación de pedidos, para conservar la consistencia de cantidades e historial. Los extras incluyen historial, exportación, estadísticas, filtros y alertas con resumen por reglas. La integración opcional con Gemini está implementada y probada mediante simulación HTTP; no está activada ni verificada contra Google sin una clave.
-
-Para mantener acotado el tamaño del documento, cada pedido admite hasta 100 000 unidades (1000 paquetes). Número: máximo 50 caracteres; cliente: 120; motivo: 300. El listado se pagina a 12 pedidos por defecto.
-
-**Publicación verificada:** Render activo, API con respuesta HTTP 200 y Atlas conectado; creación 100/100/50, rechazo, avance 20%, persistencia tras recargar y duplicados comprobados desde internet. El listado y detalle se revisaron en escritorio y móvil, incluidos 320px, con estilos aplicados y sin errores de consola.
-
-El plan gratuito de Render puede tardar aproximadamente un minuto al reactivarse después de inactividad. [Referencia de Render](https://render.com/docs/free).
-
-**Mejora opcional pendiente:** La CI no está activada: la credencial de publicación carece del permiso `workflow`; la plantilla queda incluida para habilitarla.
-
-## Convenciones
-
-Código propio, comentarios y documentación en español. Se conservan los identificadores exigidos por frameworks, formatos y herramientas. Los comentarios explican intención, reglas y decisiones. No se publican archivos `.env`, credenciales ni datos de ejecución.
-
-## Alertas y resumen operativo
-
-Disponible en `/operacion`: revisiones detenidas, pedidos sin actividad y rechazos repetidos, con evidencia y enlaces. Funciona sin pagos ni claves mediante reglas explícitas. El listado permite filtros por cliente y fechas, y orden por avance o antigüedad. Consulta [criterios, IA opcional y pruebas](docs/operacion.md).
-
-## Guía paso a paso
-
-La primera visita ofrece un recorrido de la aplicación. También puede iniciarse desde
-**Guía paso a paso** en el encabezado. Explica pedidos, creación, filtros, CSV, paquetes,
-historial, estadísticas, alertas y resumen, resaltando cada sección. Incluye anterior,
-siguiente, omitir y cierre con Escape. La guía solo consulta datos y omite el detalle
-si no existe un pedido; la preferencia de bienvenida se guarda en el navegador.
+<h2 id="anexos">15 · Glosario, anexos y referencias</h2>
+<h3>15.1 Glosario</h3>
+<table>
+  <tr><th>Término</th><th>Definición en este proyecto</th></tr>
+  <tr><td>Pedido / paquete</td><td>Solicitud de unidades / agrupación productiva de hasta 100 unidades.</td></tr>
+  <tr><td>Cartera / actividad</td><td>Pedidos recibidos en un período / movimientos ocurridos durante ese período.</td></tr>
+  <tr><td>Concurrencia optimista</td><td>Validación del estado y versión esperados antes de aplicar un cambio.</td></tr>
+  <tr><td>Idempotencia del lote</td><td>Repetir su carga no vuelve a insertar sus pedidos.</td></tr>
+  <tr><td>SDD / API / E2E</td><td>Desarrollo guiado por especificaciones / interfaz de programación / prueba de extremo a extremo.</td></tr>
+</table>
+<h3>15.2 Documentación complementaria</h3>
+<ul>
+  <li><a href="docs/spec.md">Especificación y criterios de aceptación.</a></li>
+  <li><a href="docs/openapi.json">Contrato OpenAPI de la implementación.</a></li>
+  <li><a href="docs/agent-log.md">Bitácora de decisiones, errores y verificaciones.</a></li>
+  <li><a href="docs/datos-demostracion.md">Procedencia de la muestra y fórmulas de indicadores.</a></li>
+  <li><a href="docs/operacion.md">Alertas, resumen gratuito y configuración opcional de Gemini.</a></li>
+  <li><a href="docs/guia-presentacion.md">Guía para presentar la aplicación.</a></li>
+  <li><a href="docs/diseno.md">Referencia visual y decisiones de diseño.</a></li>
+</ul>
+<h3>15.3 Referencias técnicas oficiales</h3>
+<p>Fuentes de consulta para las tecnologías empleadas; las versiones instaladas se verifican en el archivo de dependencias del proyecto.</p>
+<ul>
+  <li><a href="https://angular.dev/overview">Angular: descripción del framework.</a></li>
+  <li><a href="https://nodejs.org/en/about">Node.js: entorno de ejecución.</a></li>
+  <li><a href="https://expressjs.com/">Express: framework HTTP para Node.js.</a></li>
+  <li><a href="https://www.mongodb.com/docs/manual/data-modeling/">MongoDB: modelado documental.</a></li>
+  <li><a href="https://mongoosejs.com/docs/guide.html">Mongoose: esquemas y modelos.</a></li>
+  <li><a href="https://www.typescriptlang.org/docs/handbook/intro.html">TypeScript: manual del lenguaje.</a></li>
+</ul>
+<hr>
+<p align="center"><strong>Seguimiento de pedidos · TATA</strong><br>Documentación de la implementación · Datos de demostración sintéticos<br><a href="#contenido">Volver al contenido</a></p>

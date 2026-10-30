@@ -16,7 +16,8 @@
     "start": "npm start -w @pedidos/api",
     "test:e2e": "playwright test",
     "datos:ejemplo": "node scripts/cargar-ejemplos.mjs",
-    "datos:operacion": "npm run datos:operacion -w @pedidos/api"
+    "datos:operacion": "npm run datos:operacion -w @pedidos/api",
+    "docs:manual": "node scripts/generar-manual.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",

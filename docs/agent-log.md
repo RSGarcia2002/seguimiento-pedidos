@@ -114,3 +114,16 @@ paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.
   Recorrido completo en el sitio público: 12 pasos, cero errores del navegador,
   cero solicitudes de escritura y sin desbordamiento móvil. Capturas guardadas en
   docs/capturas/guia-bienvenida.png, guia-escritorio.png y guia-movil.png.
+
+### Manual técnico y de usuario — 29/10/2026
+
+- README reestructurado en HTML compatible con GitHub: control documental, índice,
+  procedimientos, tecnologías verificadas en package-lock, metodología SDD, arquitectura,
+  datos, instalación, API, pruebas, mantenimiento, incidencias y referencias oficiales.
+- Añadidos portada y diagramas SVG propios y cuatro capturas actuales del sitio publicado.
+- Edición docs/manual/index.html generada desde el README con npm run docs:manual;
+  estilos locales, navegación lateral, accesibilidad e impresión. Sin dependencias nuevas.
+- Se comprobaron 18 enlaces de ancla, 27 rutas locales y ocho imágenes; Chrome cargó
+  todas las imágenes sin errores y no hubo desbordamiento a 390 ni 320 píxeles.
+  Revisadas portada, arquitectura, móvil y estilos de impresión.
+- Cambio documental: no requiere desplegar otra versión de la aplicación.
