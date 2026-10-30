@@ -27,14 +27,14 @@
 
 La IA generativa no es necesaria para operar ni para acreditar el uso de un agente durante el desarrollo. No se presenta el resumen por reglas como IA generativa.
 
-## Enviar mañana
+## Enviar el 30 de octubre de 2026
 
 1. Responder al correo original antes de cumplir 24 horas desde su recepción. La fecha prevista es viernes 30 de octubre; la hora exacta debe comprobarse en ese correo.
 2. Copiar el texto de docs/entrega.md y comprobar que ambos enlaces se abren.
 3. La evaluación solicita los enlaces. El ZIP y el manual PDF se entregan como material opcional si se desean adjuntar; no es necesario adjuntar dependencias ni archivos de entorno.
 4. Enviar el correo y conservar la respuesta enviada como constancia.
 
-## Presentar mañana
+## Preparar la presentación
 
 Abrir la aplicación 10 minutos antes, preparar el guion y utilizar únicamente un pedido propio para la demostración. Mantener disponibles el manual PDF y las capturas como respaldo. No realizar cambios funcionales de último momento.
 

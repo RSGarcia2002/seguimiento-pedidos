@@ -163,3 +163,10 @@ paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.
   revisadas. Exportaciones locales excluidas de Git; el código fuente se empaqueta desde
   archivos versionados y se comprueba la ausencia de credenciales.
 - Correo sin enviar. Solo quedan las acciones personales de envío y presentación.
+
+### Borrador de envío — 30/10/2026
+
+- Correo revisado y listo para responder al hilo original; no se envió ningún mensaje.
+- Enlaces de aplicación y repositorio comprobados con HTTP 200; Atlas conectado.
+- Paquete local actualizado con asunto/cuerpo copiables y texto plano. El ZIP queda
+  opcional; los enlaces son la entrega solicitada. Sin cambios funcionales ni despliegue.
