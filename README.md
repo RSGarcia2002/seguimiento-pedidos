@@ -109,10 +109,12 @@
   <tr><td>Resolver conflicto</td><td>Si otro usuario modificó el pedido, revise los datos actuales antes de repetir.</td><td>La versión del documento impide sobrescribir o eliminar cambios nuevos. El formulario ofrece recargar los datos actuales.</td></tr>
 </table>
 <p>Cancelar o cerrar los diálogos no modifica datos. Una eliminación correcta regresa al listado y muestra el resultado.</p>
+<p align="center"><img src="docs/capturas/manual-editar.png" alt="Formulario de edición con número, cliente, cantidad y distribución de paquetes" width="100%"><br><em>Figura 3. Edición de un pedido temporal de verificación antes de iniciar producción.</em></p>
+<p align="center"><img src="docs/capturas/manual-eliminar.png" alt="Confirmación de eliminación con aviso de pérdida de paquetes e historial y número escrito" width="100%"><br><em>Figura 4. Confirmación explícita de eliminación. El registro temporal de esta captura se eliminó al terminar la prueba.</em></p>
 
 <h2 id="produccion">04 · Producción por paquetes e historial</h2>
 <p>Abra <strong>Ver detalle</strong> en una fila. La cabecera presenta cliente, cantidad, paquetes y avance; debajo aparecen las tarjetas individuales.</p>
-<p align="center"><img src="docs/diagramas/flujo-paquetes.svg" alt="Estados de un paquete y devolución desde Revisión hacia En proceso" width="100%"><br><em>Figura 3. Ciclo permitido de producción.</em></p>
+<p align="center"><img src="docs/diagramas/flujo-paquetes.svg" alt="Estados de un paquete y devolución desde Revisión hacia En proceso" width="100%"><br><em>Figura 5. Ciclo permitido de producción.</em></p>
 <table>
   <tr><th>Estado actual</th><th>Acción</th><th>Nuevo estado</th></tr>
   <tr><td>Pendiente</td><td>Iniciar</td><td>En proceso</td></tr>
@@ -124,7 +126,7 @@
 <p>El motivo de rechazo es opcional y admite hasta 300 caracteres. Para consultar los movimientos, despliegue <strong>Historial de cambios</strong> en la tarjeta. Se muestran fecha, origen, destino y motivo registrado.</p>
 <blockquote><strong>Cómo leer el avance.</strong> Un pedido de 250 unidades con solo el paquete de 50 terminado tiene un avance de <strong>20 %</strong>. Completar uno de tres paquetes no implica necesariamente 33,3 %: el cálculo utiliza unidades.</blockquote>
 <p>Si otra solicitud cambia el paquete antes de guardar, la operación se rechaza por conflicto. Actualice el detalle y revise su estado antes de intentar nuevamente.</p>
-<p align="center"><img src="docs/capturas/manual-detalle.png" alt="Detalle de pedido con avance ponderado y tarjetas de paquetes por estado" width="100%"><br><em>Figura 4. Seguimiento individual de un pedido existente.</em></p>
+<p align="center"><img src="docs/capturas/manual-detalle.png" alt="Detalle de pedido con avance ponderado y tarjetas de paquetes por estado" width="100%"><br><em>Figura 6. Seguimiento individual de un pedido existente.</em></p>
 
 <h2 id="estadisticas">05 · Estadísticas e indicadores</h2>
 <p>Ingrese a <strong>Estadísticas</strong> y seleccione los últimos 7, 30 o 90 días. Los valores se calculan desde MongoDB al consultar; las capturas representan un momento de la demostración.</p>
@@ -138,7 +140,7 @@
   <tr><td>Volumen por cliente</td><td>Unidades recibidas en pedidos de la cartera; se muestran hasta ocho clientes.</td></tr>
 </table>
 <p>El gráfico compara entradas y terminaciones por día. <strong>Consultar datos diarios del gráfico</strong> ofrece una alternativa tabular. Cuando no existe una muestra para el tiempo medio, la API devuelve <code>null</code>; no se interpreta como duración cero.</p>
-<p align="center"><img src="docs/capturas/manual-estadisticas.png" alt="Estadísticas con selector de período, indicadores y gráfico de unidades recibidas y terminadas" width="100%"><br><em>Figura 5. Análisis de cartera y actividad del período.</em></p>
+<p align="center"><img src="docs/capturas/manual-estadisticas.png" alt="Estadísticas con selector de período, indicadores y gráfico de unidades recibidas y terminadas" width="100%"><br><em>Figura 7. Análisis de cartera y actividad del período.</em></p>
 
 <h2 id="alertas">06 · Alertas y resumen operativo</h2>
 <table>
@@ -161,12 +163,12 @@
   <tr><td>IA generativa · Gemini</td><td><strong>Opcional, desactivada sin clave</strong></td><td>Cliente REST implementado y probado contra simulación. No se ha verificado una llamada real a Google.</td></tr>
 </table>
 <p>La integración opcional comparte solicitudes simultáneas, conserva resultados válidos cinco minutos y limita intentos diarios por proceso. Ante cuota agotada, error, tiempo de espera o referencias inválidas, muestra el resumen por reglas. No dispone de herramientas para modificar pedidos. Consulte <a href="docs/operacion.md">la configuración y los límites de la integración</a>.</p>
-<p align="center"><img src="docs/capturas/manual-alertas.png" alt="Alertas operativas y resumen gratuito identificado como Reglas de seguimiento" width="100%"><br><em>Figura 6. Evidencia y prioridades del seguimiento operativo.</em></p>
+<p align="center"><img src="docs/capturas/manual-alertas.png" alt="Alertas operativas y resumen gratuito identificado como Reglas de seguimiento" width="100%"><br><em>Figura 8. Evidencia y prioridades del seguimiento operativo.</em></p>
 
 <h2 id="manual-tecnico">07 · Manual técnico: arquitectura y tecnologías</h2>
 <h3>7.1 Organización del sistema</h3>
 <p>La solución utiliza un monorepositorio con npm workspaces. Angular implementa la presentación; Express expone operaciones HTTP; el dominio valida reglas y calcula resultados; Mongoose define documentos e índices de MongoDB. En producción, Express sirve también los archivos Angular compilados, por lo que la interfaz y la API comparten origen.</p>
-<p align="center"><img src="docs/diagramas/arquitectura.svg" alt="Diagrama de presentación Angular, API Express, persistencia MongoDB y Gemini opcional" width="100%"><br><em>Figura 7. Componentes y responsabilidades.</em></p>
+<p align="center"><img src="docs/diagramas/arquitectura.svg" alt="Diagrama de presentación Angular, API Express, persistencia MongoDB y Gemini opcional" width="100%"><br><em>Figura 9. Componentes y responsabilidades.</em></p>
 <h3>7.2 Especificaciones tecnológicas</h3>
 <p>Las versiones de paquetes corresponden a <a href="package-lock.json">package-lock.json</a> en esta edición. La rama de Node requerida está definida en <a href="package.json">package.json</a>; la imagen de MongoDB local está en <a href="compose.yaml">compose.yaml</a>.</p>
 <table>

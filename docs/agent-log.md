@@ -144,3 +144,9 @@ paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.
 - La prueba de interfaz detectó que se perdía el aviso tras navegar; se corrigió con
   un servicio de avisos de un solo consumo. Compilación final sin avisos de presupuesto.
 - Manual HTML, README y recorrido guiado actualizados con las operaciones del CRUD.
+- Despliegue dep-dbhu8mmq1p3s73fraq1g confirmado live en versión 28b7333.
+  Desde la aplicación pública se creó un pedido temporal, se editó a 350 unidades,
+  se comprobaron cuatro paquetes, persistencia, bloqueo de cantidad tras iniciar,
+  confirmación y eliminación con GET posterior 404. Sin errores del navegador.
+  El registro temporal se eliminó; los pedidos existentes se conservaron.
+- Capturas actualizadas de detalle, edición y eliminación incorporadas al manual.
