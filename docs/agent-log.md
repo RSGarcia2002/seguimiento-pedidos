@@ -110,3 +110,7 @@ paginados y ausencia de errores de consola o desbordamientos en 1440/390/320px.
 - Prueba E2E recorre todas las etapas, comprueba ausencia de POST y otros métodos de
   escritura, igualdad del pedido antes/después, repetición, foco y móvil de 390/320px.
 - Compilación, prueba Angular y los dos recorridos E2E aprobados.
+- Versión 47db810 publicada: despliegue dep-dbhtubcs728c73d6b9g0 confirmado live.
+  Recorrido completo en el sitio público: 12 pasos, cero errores del navegador,
+  cero solicitudes de escritura y sin desbordamiento móvil. Capturas guardadas en
+  docs/capturas/guia-bienvenida.png, guia-escritorio.png y guia-movil.png.
